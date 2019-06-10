@@ -1,1 +1,9 @@
+# visual studio code
 .vscode
+
+# visual studio
+.vs
+*.user
+
+bin
+intermediate
