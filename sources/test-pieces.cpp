@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "tetris-core.h"
+#include "TetrisHost.h"
 #include "details/Board.h"
 #include <bitset>
 
-
+using namespace tc;
 
 void printSpan(const Span& span)
 {
@@ -12,7 +12,7 @@ void printSpan(const Span& span)
 	char line[] = "....";
 	for (u32 i = 0; i < 16; ++i)
 	{
-		line[i % 4] = bits.test(15-i) ? '#' : '.';
+		line[i % 4] = bits.test(15 - i) ? '#' : '.';
 		if (i % 4 == 3)
 		{
 			std::cout << line << std::endl;
@@ -23,10 +23,10 @@ void printSpan(const Span& span)
 
 int main()
 {
-    Board b(10, 22);
+	Board b(10, 22);
 
-    std::cout << "Hi there" << std::endl;
-    
+	std::cout << "Hi there" << std::endl;
+
 	for (i32 i = 0; i < Piece_Count; ++i)
 	{
 		for (i32 o = 0; o < 4; ++o)
@@ -36,5 +36,6 @@ int main()
 		}
 	}
 
-    return 0;
+	return 0;
 }
+

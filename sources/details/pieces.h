@@ -3,6 +3,9 @@
 #include "types.h"
 #include <array>
 
+namespace tc
+{
+
 enum EPiece
 {
 	Piece_None,
@@ -31,3 +34,5 @@ struct Span
 };
 
 const Span& GetSpan(EPiece p, EOrient o);
+
+} // ns tc

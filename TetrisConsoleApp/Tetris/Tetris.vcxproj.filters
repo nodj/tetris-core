@@ -22,13 +22,33 @@
     <Filter Include="Source Files\tetris-core\sources\details">
       <UniqueIdentifier>{953ccf87-cb9a-4135-ae5b-4458a44a6d07}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tetris-core\sources\modes">
+      <UniqueIdentifier>{26af7bd8-b6ce-41d7-b22c-3feaf5ac2d49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\sources\tetris-core.h">
+    <ClCompile Include="..\..\sources\TetrisHost.cpp">
       <Filter>Source Files\tetris-core\sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\types.h">
+    </ClCompile>
+    <ClCompile Include="..\..\sources\test-pieces.cpp">
+      <Filter>Source Files\tetris-core\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\details\pieces.cpp">
       <Filter>Source Files\tetris-core\sources\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\details\Board.cpp">
+      <Filter>Source Files\tetris-core\sources\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\modes\GameModeStandard.cpp">
+      <Filter>Source Files\tetris-core\sources\modes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\modes\GameMode.cpp">
+      <Filter>Source Files\tetris-core\sources\modes</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\sources\TetrisHost.h">
+      <Filter>Source Files\tetris-core\sources</Filter>
     </ClInclude>
     <ClInclude Include="..\..\sources\details\Board.h">
       <Filter>Source Files\tetris-core\sources\details</Filter>
@@ -36,19 +56,14 @@
     <ClInclude Include="..\..\sources\details\pieces.h">
       <Filter>Source Files\tetris-core\sources\details</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\sources\details\Board.cpp">
+    <ClInclude Include="..\..\sources\details\types.h">
       <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\tetris-core.cpp">
-      <Filter>Source Files\tetris-core\sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\pieces.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\test-pieces.cpp">
-      <Filter>Source Files\tetris-core\sources</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="..\..\sources\modes\GameMode.h">
+      <Filter>Source Files\tetris-core\sources\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sources\modes\GameModeStandard.h">
+      <Filter>Source Files\tetris-core\sources\modes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
