@@ -18,7 +18,7 @@ void Board::Clear()
 	Consolidate();
 }
 
-void Board::StartFrame()
+void Board::ResetToConsolidated()
 {
 	// reset to last consolidated state
 	MergedBlocks = StaticBlocks;

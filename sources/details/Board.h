@@ -41,7 +41,7 @@ public:
 	void Clear();
 	void Consolidate();
 
-	void StartFrame();
+	void ResetToConsolidated();
 	void EndFrame();
 
 private:

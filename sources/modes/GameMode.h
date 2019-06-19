@@ -1,22 +1,11 @@
 #pragma once
 
 #include "../details/types.h"
+#include "../details/GameplayInput.h"
 
 
 namespace tc
 {
-
-enum EGameplayInput
-{
-	DirLeft,
-	DirRight,
-	// 	DirUp,
-	// 	DirDown,
-	// 	RotateLeft,
-	// 	RotateRight,
-	// 	Pause,
-};
-
 
 struct GameMode
 {
@@ -29,7 +18,7 @@ protected:
 	virtual void InternalTick(i32 ms) = 0;
 
 private:
-	float lostTime; // handle offset between int ticks and elapsed time
+	float lostTime = 0; // handle offset between int ticks and elapsed time
 };
 
 

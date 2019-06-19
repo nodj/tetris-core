@@ -2,42 +2,84 @@
 #include "GameMode.h"
 #include "../details/Board.h"
 #include <bitset>
+#include "../details/InputTracker.h"
 
 
 namespace tc
 {
 
-template<typename T, int Size>
-struct StateTracker
+struct IState
 {
-	StateTracker(T Initial) : Current(Initial), Snapshot(Initial) {}
-	void Allow(T From, T To) { TransitionMatrix[Size*From+To] = true; }
+	IState()
+		: bCanFadeIn(0)
+		, bCanTick(0)
+		, bCanFadeOut(0)
+	{}
 
-	T Get() const { return Current; }
-	void Set(T NewState)
-	{
-		if (TransitionMatrix[Size*Current+NewState])
-		{
-			EndFrame();
-			Current = NewState;
-		}
-	}
+	// return the identifier of this state
+	virtual i32 Id() = 0;
 
-	void StartFrame() const { }
-	void EndFrame() { Snapshot = Current; }
-	bool IsFirstFrame() const { return Snapshot != Current; }
+	// called pre Tick* calls
+	virtual i32 GetLogicTickRate() = 0;
 
-private:
-	T Current;
-	T Snapshot;
-	std::bitset<Size*Size> TransitionMatrix;
+	// called once on state init
+	virtual void Enter() {}
+
+	// loop before standard loop
+	// return true to repeat this phase
+	virtual bool TickFadeIn(i32 /*LogicTick*/) { return false; }
+
+	// standard execution loop
+	// return true to repeat this phase
+	virtual bool Tick(i32 /*LogicTick*/) { return false; }
+
+	// loop after standard loop
+	// return true to repeat this phase
+	virtual bool TickFadeOut(i32 /*LogicTick*/) { return false; }
+
+	// called once on state exit
+	virtual void Exit() {}
+
+	u8 bCanFadeIn : 1;
+	u8 bCanTick : 1;
+	u8 bCanFadeOut : 1;
 };
+
+
+
+enum SubState
+{
+	Setup, // init
+	Wait, // menu loop
+	Play, // std loop
+	End, // death anim
+	_count,
+};
+
+
+
+
+
+class WaitState : public IState
+{
+public:
+	WaitState(class StandardGameMode* Mode) : Mode(Mode) {}
+	virtual i32 Id() override { return SubState::Wait; }
+	virtual void Enter() override;
+	virtual i32 GetLogicTickRate() override;
+	virtual bool TickFadeIn(i32 LogicTick) override;
+	virtual bool Tick(i32 LogicTick) override;
+	virtual bool TickFadeOut(i32 LogicTick) override;
+private:
+	i32 CurrentFlashLine;
+	class StandardGameMode* Mode;
+};
+
 
 class StandardGameMode : public GameMode
 {
 public:
 	StandardGameMode(i32 Width=10, i32 Height=22);
-	~StandardGameMode() = default;
 
 	virtual void RegisterInput(EGameplayInput Input) override;
 	virtual void InternalTick(i32 ms) override;
@@ -46,30 +88,24 @@ public:
 
 private:
 
-	bool ConsumeSubTicks(int RequiredTicks);
+// 	bool ConsumeSubTicks(int RequiredTicks);
 
 	i32 ConsumeAvailableLogicTick(int SubtickPerLogicTick);
 
-	enum State
-	{
-		Setup, // init
-		Wait, // menu loop
-		Play, // std loop
-		End, // death anim
-		_count,
-	};
 
-	StateTracker<State, State::_count> currentState;
+// 	StateTracker<State, State::_count> currentState;
 
-	template<State Current> bool Tick();
+// 	template<State Current> bool Tick();
 	Board board;
 	i32 AccumulatedSubTicks;
-	i32 SubTickPerFrame;
+// 	i32 SubTickPerFrame;
 
-	struct
-	{
-		i32 CurrentFlashLine;
-	} WaitStateContext;
+	WaitState waitState;
+	u8 subState;
+
+	InputTracker Inputs;
+
+	friend WaitState;
 };
 
 } // ns tc
