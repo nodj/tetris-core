@@ -13,12 +13,17 @@ struct GameMode
 
 	virtual void RegisterInput(EGameplayInput Input) = 0;
 	void Tick(float delta_s);
+	bool IsOver() const { return bIsOver; }
 
 protected:
 	virtual void InternalTick(i32 ms) = 0;
+	void SetOver() { bIsOver = true; }
 
 private:
-	float lostTime = 0; // handle offset between int ticks and elapsed time
+	// handle offset between int ticks and elapsed time
+	float lostTime = 0;
+	// pollable flag thet declares this gamemode over
+	bool bIsOver = 0;
 };
 
 

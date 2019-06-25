@@ -39,10 +39,11 @@ public:
 	Cell& At(i32 x, i32 y) { return MergedBlocks[LinearCoordChecked(x, y)]; }
 
 	void Clear();
+	void Fill(Cell Value);
+
 	void Consolidate();
 
 	void ResetToConsolidated();
-	void EndFrame();
 
 private:
 	constexpr i32 LinearCoord(i32 x, i32 y) const { return x + y * Width; }

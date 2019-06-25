@@ -14,8 +14,13 @@ Board::Board(i32 Width, i32 Height)
 
 void Board::Clear()
 {
-	std::fill(std::begin(MergedBlocks), std::end(MergedBlocks), Cell{});
+	Fill(Cell{});
 	Consolidate();
+}
+
+void Board::Fill(Cell Value)
+{
+	std::fill(std::begin(MergedBlocks), std::end(MergedBlocks), Value);
 }
 
 void Board::ResetToConsolidated()
