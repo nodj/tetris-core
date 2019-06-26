@@ -35,4 +35,13 @@ void Board::Consolidate()
 	StaticBlocks = MergedBlocks;
 }
 
+Cell* Board::AtInternal(i32 x, i32 y)
+{
+	if (x < 0 || x >= Width || y < 0)
+		return &VirtualOffBoard;
+	if (y >= Height)
+		return &VirtualNorth;
+	return &MergedBlocks[LinearCoord(x, y)];
+}
+
 } // ns tc

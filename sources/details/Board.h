@@ -35,8 +35,8 @@ public:
 	i32 GetWidth() const { return Width; }
 	i32 GetHeight() const { return Height; }
 
-	const Cell& At(i32 x, i32 y) const { return MergedBlocks[LinearCoordChecked(x, y)]; }
-	Cell& At(i32 x, i32 y) { return MergedBlocks[LinearCoordChecked(x, y)]; }
+	const Cell& At(i32 x, i32 y) const { return *const_cast<Board*>(this)->AtInternal(x, y); }
+	Cell& At(i32 x, i32 y) { return *AtInternal(x, y); }
 
 	void Clear();
 	void Fill(Cell Value);
@@ -46,17 +46,18 @@ public:
 	void ResetToConsolidated();
 
 private:
+	Cell* AtInternal(i32 x, i32 y);
+
 	constexpr i32 LinearCoord(i32 x, i32 y) const { return x + y * Width; }
-	i32 LinearCoordChecked(i32 x, i32 y) const {
-		assert(x >= 0 && x < Width);
-		assert(y >= 0 && y < Height);
-		return LinearCoord(x, y);
-	}
 
 	i32 Width;
 	i32 Height;
     Grid StaticBlocks;
     Grid MergedBlocks;
+
+	// fake cells, used to avoid tons of ifs
+	Cell VirtualOffBoard;
+	Cell VirtualNorth;
 };
 
 } // ns tc
