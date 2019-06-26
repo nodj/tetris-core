@@ -8,15 +8,15 @@ namespace tc
 
 enum EPiece
 {
-	Piece_None,
-	Piece_I,
-	Piece_L,
-	Piece_J,
-	Piece_N,
-	Piece_Z,
-	Piece_O,
-	Piece_T,
-	Piece_Count = Piece_T
+	Piece_I = 0,
+	Piece_L = 1,
+	Piece_J = 2,
+	Piece_N = 3,
+	Piece_Z = 4,
+	Piece_O = 5,
+	Piece_T = 6,
+	Piece_None = 7,
+	Piece_Count = 7,
 };
 
 enum EOrient
