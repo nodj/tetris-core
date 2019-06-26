@@ -6,7 +6,7 @@
 namespace tc
 {
 
-enum EPiece
+enum EPiece : u8
 {
 	Piece_I = 0,
 	Piece_L = 1,

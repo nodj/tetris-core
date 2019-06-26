@@ -30,15 +30,20 @@ public:
     using Grid = std::vector<Cell>;
 
 public:
+	// Describe a block layer
+	enum BlockLayer{None, Static, Merged};
+
 	Board(i32 Width, i32 Height);
 
 	i32 GetWidth() const { return Width; }
 	i32 GetHeight() const { return Height; }
 
-	const Cell& At(i32 x, i32 y) const { return *const_cast<Board*>(this)->AtInternal(x, y); }
-	Cell& At(i32 x, i32 y) { return *AtInternal(x, y); }
+	const Cell& At(i32 x, i32 y) const { return *const_cast<Board*>(this)->AtInternal(x, y, BlockLayer::Merged); }
+	Cell& At(i32 x, i32 y) { return *AtInternal(x, y, BlockLayer::Merged); }
 
-	bool TryBlit(const Span& span, i32 xOrigin, i32 yOrigin, Cell SetValue);
+// 	bool TryBlit(const Span& span, i32 xOrigin, i32 yOrigin, Cell SetValue);
+
+	bool Blit(const Span& span, i32 xOrigin, i32 yOrigin, Cell Value, BlockLayer TestLayer, BlockLayer BlitLayer);
 
 	void Clear();
 	void Fill(Cell Value);
@@ -48,7 +53,7 @@ public:
 
 
 private:
-	Cell* AtInternal(i32 x, i32 y);
+	Cell* AtInternal(i32 x, i32 y, BlockLayer Target);
 
 	constexpr i32 LinearCoord(i32 x, i32 y) const { return x + y * Width; }
 

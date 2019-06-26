@@ -114,7 +114,7 @@ void PlayStateNode::Enter()
 
 i32 PlayStateNode::GetLogicTickRate()
 {
-	return 100;
+	return 10;
 }
 
 bool PlayStateNode::Tick(i32 LogicTick)
@@ -123,62 +123,75 @@ bool PlayStateNode::Tick(i32 LogicTick)
 
 	Board& board = Mode->board;
 
-	board.ResetToConsolidated();
-
 	// get moving part
-	bool bBlit = true;// LogicTickSum > GravityTickTreshold;
+	i32 PreviousX = MovingBlockX;
+	i32 PreviousY = MovingBlockY;
+
+	// Spawn a new piece
 	if (MovingBlockNature == EPiece::Piece_None)
 	{
 		if (!bInLineDeleteAnim)
 		{
 			// Spawn a new piece !
-			MovingBlockNature = RPG.pop(); // such random... Use random_shuffle and iota
+			MovingBlockNature = RPG.pop();
 			MovingBlockX = board.GetWidth()/2;
 			MovingBlockY = board.GetHeight();
-			bBlit = true; // force blit on spawn
+
+			// Validate that we spawn on an available area
+			const Span& newSpan = GetSpan(MovingBlockNature, MovingBlockOrient);
+			bool bSpawnSucceed = board.Blit(newSpan, MovingBlockX, MovingBlockY, Cell{}, Board::BlockLayer::Static, Board::BlockLayer::None);
+			if (!bSpawnSucceed)
+				return false;
 		}
 	}
 
+	const Span& span = GetSpan(MovingBlockNature, MovingBlockOrient);
+	Cell Value;
+	Value.state = true;
+	Value.nature = MovingBlockNature;
+
+	// Gravity check
+	bool bMustConsolidate = false;
 	if (MovingBlockNature != EPiece::Piece_None)
 	{
-		// gravity
-		if (bBlit)
+		// consume gravity
+		if (LogicTickSum >= GravityTickTreshold)
 		{
-			// Try to go down... Or lock
-			i32 x = MovingBlockX;
+			LogicTickSum -= GravityTickTreshold;
 
 			i32 GravityDisplacement = 1;
-			i32 y = MovingBlockY - GravityDisplacement;
+			i32 TestY = MovingBlockY - GravityDisplacement;
 
-			const Span& span = GetSpan(MovingBlockNature, MovingBlockOrient);
-			Cell Value;
-			Value.state = true;
-			Value.nature = MovingBlockNature;
-
-			if (board.TryBlit(span, x, y, Value))
+			if (board.Blit(span, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 			{
-				MovingBlockY -= GravityDisplacement;
+				MovingBlockY = TestY;
 			}
 			else
 			{
-				MovingBlockNature = EPiece::Piece_None;
+				bMustConsolidate = true;
+			}
+		}
+
+		if (bMustConsolidate)
+		{
+			board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
+			board.ResetToConsolidated();
+
+			// clear MovingBlock state (to spawn a new one in the next frame)
+			MovingBlockNature = EPiece::Piece_None;
+			MovingBlockX = -1;
+			MovingBlockY = -1;
+		}
+		else
+		{
+			// update board if state changed
+			if (PreviousX != MovingBlockX || PreviousY != MovingBlockY)
+			{
+				board.ResetToConsolidated();
+				board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Merged);
 			}
 		}
 	}
-
-
-	// move based on inputs
-
-	// blit moving part
-
-	// detect end
-
-
-
-// 	Cell FillCell;
-// 	FillCell.state = (LogicTickSum /10)%2 == 0;
-//
-// 	board.Fill(FillCell);
 
 	return !Mode->Inputs.IsAnyActionDown();
 }

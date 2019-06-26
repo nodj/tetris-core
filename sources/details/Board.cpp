@@ -12,26 +12,40 @@ Board::Board(i32 Width, i32 Height)
 	Clear();
 }
 
-bool Board::TryBlit(const Span& span, i32 xOrigin, i32 yOrigin, Cell SetValue)
+bool Board::Blit(const Span& span, i32 xOrigin, i32 yOrigin, Cell Value, BlockLayer TestLayer, BlockLayer BlitLayer)
 {
 	FourPixels fpx(span);
 
-	std::array<Cell*, 4> cells;
+	std::array<i32, 4> xs;
+	std::array<i32, 4> ys;
+
 	for(i32 i = 0; i < 4; ++i)
 	{
-		i32 x = xOrigin + fpx.x[i];
-		i32 y = yOrigin - fpx.y[i];
-		cells[i] = AtInternal(x, y);
-		if (cells[i] == &VirtualOffBoard)
-			return false;
-		if (cells[i]->state && cells[i] != &VirtualNorth)
-			return false;
+		xs[i] = xOrigin + fpx.x[i];
+		ys[i] = yOrigin - fpx.y[i];
 	}
 
-	// Validated, Do blit
-	for(i32 i = 0; i < 4; ++i)
+	// Test part
+	if (TestLayer != BlockLayer::None)
 	{
-		*cells[i] = SetValue;
+		std::array<Cell*, 4> testCells;
+		for(i32 i = 0; i < 4; ++i)
+		{
+			testCells[i] = AtInternal(xs[i], ys[i], TestLayer);
+			if (testCells[i] == &VirtualOffBoard)
+				return false;
+			if (testCells[i]->state && testCells[i] != &VirtualNorth)
+				return false;
+		}
+	}
+
+	// Blit part
+	if (BlitLayer != BlockLayer::None)
+	{
+		for(i32 i = 0; i < 4; ++i)
+		{
+			*AtInternal(xs[i], ys[i], BlitLayer) = Value;
+		}
 	}
 
 	return true;
@@ -60,13 +74,14 @@ void Board::Consolidate()
 	StaticBlocks = MergedBlocks;
 }
 
-Cell* Board::AtInternal(i32 x, i32 y)
+Cell* Board::AtInternal(i32 x, i32 y, BlockLayer Target)
 {
 	if (x < 0 || x >= Width || y < 0)
 		return &VirtualOffBoard;
 	if (y >= Height)
 		return &VirtualNorth;
-	return &MergedBlocks[LinearCoord(x, y)];
+	Grid& grid = Target==BlockLayer::Static ? StaticBlocks : MergedBlocks;
+	return &grid[LinearCoord(x, y)];
 }
 
 } // ns tc
