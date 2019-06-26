@@ -12,6 +12,31 @@ Board::Board(i32 Width, i32 Height)
 	Clear();
 }
 
+bool Board::TryBlit(const Span& span, i32 xOrigin, i32 yOrigin, Cell SetValue)
+{
+	FourPixels fpx(span);
+
+	std::array<Cell*, 4> cells;
+	for(i32 i = 0; i < 4; ++i)
+	{
+		i32 x = xOrigin + fpx.x[i];
+		i32 y = yOrigin - fpx.y[i];
+		cells[i] = AtInternal(x, y);
+		if (cells[i] == &VirtualOffBoard)
+			return false;
+		if (cells[i]->state && cells[i] != &VirtualNorth)
+			return false;
+	}
+
+	// Validated, Do blit
+	for(i32 i = 0; i < 4; ++i)
+	{
+		*cells[i] = SetValue;
+	}
+
+	return true;
+}
+
 void Board::Clear()
 {
 	Fill(Cell{});

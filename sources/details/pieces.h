@@ -35,4 +35,12 @@ struct Span
 
 const Span& GetSpan(EPiece p, EOrient o);
 
+
+struct FourPixels
+{
+	FourPixels(const Span& span);
+	std::array<u8, 4> x;
+	std::array<u8, 4> y;
+};
+
 } // ns tc

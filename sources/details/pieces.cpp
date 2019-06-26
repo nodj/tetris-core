@@ -62,4 +62,18 @@ const Span& GetSpan(EPiece p, EOrient o)
 	return allSpans[p][o];
 }
 
+FourPixels::FourPixels(const Span& span)
+{
+	i32 pxIndex = 3;
+	for (i32 i = 0; i < 16; ++i)
+	{
+		if (span.pixels & (1<<i))
+		{
+			x[pxIndex] = u8((15-i)%4);
+			y[pxIndex] = u8((15-i)/4);
+			pxIndex--;
+		}
+	}
+}
+
 } // ns tc

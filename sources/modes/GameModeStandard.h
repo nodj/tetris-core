@@ -3,9 +3,12 @@
 
 #include "../details/Board.h"
 #include "../details/InputTracker.h"
+#include "../details/pieces.h"
 #include "../details/StateTracker.h"
 
 #include <map>
+#include <numeric>
+#include <algorithm>
 
 
 namespace tc
@@ -37,6 +40,54 @@ private:
 	i32 CleanupColumn;
 };
 
+template<i32 PackCount=1>
+class RandomPieceGenerator
+{
+	static const i32 ActualPackCount = PackCount + 1;
+	static const i32 PieceCount = ActualPackCount * 7;
+
+public:
+	RandomPieceGenerator()
+		: CurrentIndex(0)
+	{
+		std::generate(Buffer.begin(), Buffer.end(), []{return SevenPack();});
+	}
+
+	EPiece pop()
+	{
+		EPiece Result = Buffer[CurrentIndex/7].seven[CurrentIndex%7];
+
+		// Advance
+		++CurrentIndex;
+		CurrentIndex %= PieceCount;
+
+		// replace consumed pack
+		if (CurrentIndex % 7 == 0)
+		{
+			i32 LastPackIndex = (CurrentIndex/7)-1;
+			LastPackIndex = (LastPackIndex + ActualPackCount) % ActualPackCount;
+			Buffer[LastPackIndex] = SevenPack();
+		}
+		return Result;
+	}
+
+private:
+	struct SevenPack
+	{
+		SevenPack()
+		{
+			i32 Source = 0;
+			std::generate(seven.begin(), seven.end(), [&Source]{ return EPiece(Source++); });
+			std::random_shuffle(seven.begin(), seven.end());
+		}
+		std::array<EPiece, 7> seven;
+	};
+
+	std::array<SevenPack, ActualPackCount> Buffer;
+	i32 CurrentIndex = 0;
+};
+
+
 class PlayStateNode : public IStateNode
 {
 public:
@@ -47,8 +98,17 @@ public:
 	virtual bool Tick(i32 LogicTick) override;
 
 private:
-	class StandardGameMode* Mode;
-	u32 LogicTickSum;
+	class StandardGameMode* Mode = nullptr;
+	u32 LogicTickSum = 0;
+
+	EPiece MovingBlockNature = Piece_None;
+	i32 MovingBlockX = 0;
+	i32 MovingBlockY = 0;
+	EOrient MovingBlockOrient = Orient_N;
+
+	bool bInLineDeleteAnim = false;
+	u32 GravityTickTreshold = 10; // not flexible enough... we'll see
+	RandomPieceGenerator<> RPG;
 };
 
 

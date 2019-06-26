@@ -98,7 +98,15 @@ void PlayStateNode::Enter()
 	bCanFadeIn = false;
 	bCanTick = true;
 	bCanFadeOut = false;
+
 	LogicTickSum = 0;
+	MovingBlockNature = Piece_None;
+	MovingBlockX = 0;
+	MovingBlockY = 0;
+	MovingBlockOrient = Orient_N;
+
+	bInLineDeleteAnim = false;
+	GravityTickTreshold = 10; // not flexible enough... we'll see
 
 	Board& board = Mode->board;
 	board.Clear();
@@ -115,10 +123,62 @@ bool PlayStateNode::Tick(i32 LogicTick)
 
 	Board& board = Mode->board;
 
-	Cell FillCell;
-	FillCell.state = (LogicTickSum /10)%2 == 0;
+	board.ResetToConsolidated();
 
-	board.Fill(FillCell);
+	// get moving part
+	bool bBlit = true;// LogicTickSum > GravityTickTreshold;
+	if (MovingBlockNature == EPiece::Piece_None)
+	{
+		if (!bInLineDeleteAnim)
+		{
+			// Spawn a new piece !
+			MovingBlockNature = RPG.pop(); // such random... Use random_shuffle and iota
+			MovingBlockX = board.GetWidth()/2;
+			MovingBlockY = board.GetHeight();
+			bBlit = true; // force blit on spawn
+		}
+	}
+
+	if (MovingBlockNature != EPiece::Piece_None)
+	{
+		// gravity
+		if (bBlit)
+		{
+			// Try to go down... Or lock
+			i32 x = MovingBlockX;
+
+			i32 GravityDisplacement = 1;
+			i32 y = MovingBlockY - GravityDisplacement;
+
+			const Span& span = GetSpan(MovingBlockNature, MovingBlockOrient);
+			Cell Value;
+			Value.state = true;
+			Value.nature = MovingBlockNature;
+
+			if (board.TryBlit(span, x, y, Value))
+			{
+				MovingBlockY -= GravityDisplacement;
+			}
+			else
+			{
+				MovingBlockNature = EPiece::Piece_None;
+			}
+		}
+	}
+
+
+	// move based on inputs
+
+	// blit moving part
+
+	// detect end
+
+
+
+// 	Cell FillCell;
+// 	FillCell.state = (LogicTickSum /10)%2 == 0;
+//
+// 	board.Fill(FillCell);
 
 	return !Mode->Inputs.IsAnyActionDown();
 }
