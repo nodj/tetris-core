@@ -99,7 +99,24 @@ public:
 
 private:
 	class StandardGameMode* Mode = nullptr;
-	u32 LogicTickSum = 0;
+	u32 TickIndex = 0;
+
+	u32 GravityTickBudget = 0;
+	u32 GravityTickTreshold = 1000;
+
+	i32 LastMoveDir = 0;
+	u32 LastMoveTick = 100;
+	u32 AutoRepeatDelay = 170;
+	u32 AutoRepeatSpeed = 50;
+	u32 StartMoveXTick = u32(-1);
+
+	struct HorizontalInputTracker
+	{
+		i32 LastDirection = 0;
+		u32 MoveTickBudget = 0;
+		u32 RepeatCount = 0;
+	};
+	HorizontalInputTracker hzit;
 
 	EPiece MovingBlockNature = Piece_None;
 	i32 MovingBlockX = 0;
@@ -107,7 +124,6 @@ private:
 	EOrient MovingBlockOrient = Orient_N;
 
 	bool bInLineDeleteAnim = false;
-	u32 GravityTickTreshold = 10; // not flexible enough... we'll see
 	RandomPieceGenerator<> RPG;
 };
 

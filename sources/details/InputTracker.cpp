@@ -46,9 +46,14 @@ void InputTracker::RegisterInput(EGameplayInput Input)
 	}
 }
 
-bool InputTracker::IsAnyActionDown()
+bool InputTracker::IsAnyActionDown() const
 {
 	return actionRotateLeft || actionRotateRight;
+}
+
+i32 InputTracker::GetHorizontalDirection() const
+{
+	return btnRightDown - btnLeftDown;
 }
 
 void InputTracker::LogicalTick(i32 LogicTickCount)

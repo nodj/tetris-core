@@ -13,7 +13,8 @@ public:
 	InputTracker();
 	void RegisterInput(EGameplayInput Input);
 
-	bool IsAnyActionDown();
+	bool IsAnyActionDown() const;
+	i32 GetHorizontalDirection() const;
 
 	virtual void LogicalTick(i32 LogicTickCount) override;
 	virtual void EndFrame(i32 LogicTickCount) override;

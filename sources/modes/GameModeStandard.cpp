@@ -99,14 +99,16 @@ void PlayStateNode::Enter()
 	bCanTick = true;
 	bCanFadeOut = false;
 
-	LogicTickSum = 0;
+	TickIndex = 0;
+
+	GravityTickBudget = 0;
+
 	MovingBlockNature = Piece_None;
 	MovingBlockX = 0;
 	MovingBlockY = 0;
 	MovingBlockOrient = Orient_N;
 
 	bInLineDeleteAnim = false;
-	GravityTickTreshold = 10; // not flexible enough... we'll see
 
 	Board& board = Mode->board;
 	board.Clear();
@@ -114,12 +116,13 @@ void PlayStateNode::Enter()
 
 i32 PlayStateNode::GetLogicTickRate()
 {
-	return 10;
+	return 1;
 }
 
 bool PlayStateNode::Tick(i32 LogicTick)
 {
-	LogicTickSum += LogicTick;
+	TickIndex += LogicTick;
+	GravityTickBudget += LogicTick;
 
 	Board& board = Mode->board;
 
@@ -154,10 +157,46 @@ bool PlayStateNode::Tick(i32 LogicTick)
 	bool bMustConsolidate = false;
 	if (MovingBlockNature != EPiece::Piece_None)
 	{
-		// consume gravity
-		if (LogicTickSum >= GravityTickTreshold)
+		// consume move inputs
+		if (i32 HzDirection = Mode->Inputs.GetHorizontalDirection())
 		{
-			LogicTickSum -= GravityTickTreshold;
+			// reset state if we change direction
+			if (hzit.LastDirection != HzDirection)
+			{
+				hzit = HorizontalInputTracker();
+				hzit.LastDirection = HzDirection;
+			}
+
+			hzit.MoveTickBudget += LogicTick;
+
+			while(true)
+			{
+				u32 TickThreshold = hzit.RepeatCount == 0 ? 0 : hzit.RepeatCount == 1 ? AutoRepeatDelay : AutoRepeatSpeed;
+				if (hzit.MoveTickBudget > TickThreshold)
+				{
+					hzit.MoveTickBudget -= TickThreshold;
+					hzit.RepeatCount++;
+
+					if (board.Blit(span, MovingBlockX + HzDirection, MovingBlockY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+					{
+						MovingBlockX += HzDirection;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			hzit.LastDirection = 0;
+		}
+
+		// consume gravity
+		if (GravityTickBudget >= GravityTickTreshold)
+		{
+			GravityTickBudget -= GravityTickTreshold;
 
 			i32 GravityDisplacement = 1;
 			i32 TestY = MovingBlockY - GravityDisplacement;
