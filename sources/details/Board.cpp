@@ -116,7 +116,7 @@ void Board::DeleteLines(std::vector<i32> CompletedLines)
 	// erase top
 	Cell NullCell;
 	std::fill(
-		std::begin(StaticBlocks)+LinearCoord(0, Width - i32(CompletedLines.size())),
+		std::begin(StaticBlocks)+LinearCoord(0, Height - i32(CompletedLines.size())),
 		std::end(StaticBlocks),
 		NullCell
 	);
