@@ -12,6 +12,18 @@ Board::Board(i32 Width, i32 Height)
 	Clear();
 }
 
+bool Board::IsLineComplete(i32 y) const
+{
+	if (y < 0 || y >= Height)
+		return false;
+
+	return std::all_of(
+		StaticBlocks.begin()+LinearCoord(0, y),
+		StaticBlocks.begin()+LinearCoord(0, y+1),
+		[](const Cell& c){ return c.state; }
+	);
+}
+
 bool Board::Blit(const Span& span, i32 xOrigin, i32 yOrigin, Cell Value, BlockLayer TestLayer, BlockLayer BlitLayer)
 {
 	FourPixels fpx(span);
@@ -82,6 +94,34 @@ Cell* Board::AtInternal(i32 x, i32 y, BlockLayer Target)
 		return &VirtualNorth;
 	Grid& grid = Target==BlockLayer::Static ? StaticBlocks : MergedBlocks;
 	return &grid[LinearCoord(x, y)];
+}
+
+void Board::DeleteLines(std::vector<i32> CompletedLines)
+{
+	// clean indices
+	auto BadIt = std::partition(std::begin(CompletedLines), std::end(CompletedLines), [=](i32 y){ return y >= 0 && y < Height; });
+	CompletedLines.erase(BadIt, std::end(CompletedLines));
+	std::sort(CompletedLines.begin(), CompletedLines.end(), std::greater<int>()); // reverse sort
+
+	// rotate full lines to top
+	for (i32 y : CompletedLines)
+	{
+		std::rotate(
+			std::begin(StaticBlocks)+LinearCoord(0, y),
+			std::begin(StaticBlocks)+LinearCoord(0, y+1),
+			std::end(StaticBlocks)
+		);
+	}
+
+	// erase top
+	Cell NullCell;
+	std::fill(
+		std::begin(StaticBlocks)+LinearCoord(0, Width - i32(CompletedLines.size())),
+		std::end(StaticBlocks),
+		NullCell
+	);
+
+	ResetToConsolidated();
 }
 
 } // ns tc

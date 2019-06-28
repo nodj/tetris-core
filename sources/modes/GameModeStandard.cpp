@@ -108,7 +108,9 @@ void PlayStateNode::Enter()
 	MovingBlockY = 0;
 	MovingBlockOrient = Orient_N;
 
-	bInLineDeleteAnim = false;
+	CompletedLines.clear();
+	CompletedLines.reserve(4);
+	CompleteLineAnimBudget = 0;
 
 	Board& board = Mode->board;
 	board.Clear();
@@ -134,7 +136,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 	// Spawn a new piece
 	if (MovingBlockNature == EPiece::Piece_None)
 	{
-		if (!bInLineDeleteAnim)
+		if (CompletedLines.empty())
 		{
 			// Spawn a new piece !
 			MovingBlockNature = RPG.pop();
@@ -147,6 +149,26 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			bool bSpawnSucceed = board.Blit(newSpan, MovingBlockX, MovingBlockY, Cell{}, Board::BlockLayer::Static, Board::BlockLayer::None);
 			if (!bSpawnSucceed)
 				return false;
+		}
+		else
+		{
+			// We have lines pending delete:
+			// 2 modes: blink anim or actual delete
+			if (CompleteLineAnimBudget > 0)
+			{
+				CompleteLineAnimBudget -= std::min<u32>(LogicTick, CompleteLineAnimBudget);
+				u32 WaveSide = 150;
+				bool bIsOn = (CompleteLineAnimBudget / WaveSide) & 1;
+				for (i32 y : CompletedLines)
+					for (i32 x = 0; x < board.GetWidth(); ++x)
+						board.At(x, y).state = bIsOn;
+			}
+			else
+			{
+				board.DeleteLines(CompletedLines);
+				CompletedLines.clear();
+			}
+			return true;
 		}
 	}
 
@@ -236,6 +258,19 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			MovingBlockNature = EPiece::Piece_None;
 			MovingBlockX = -1;
 			MovingBlockY = -1;
+
+			// complete lines
+			for (i32 y = 0; y < board.GetHeight(); ++y)
+			{
+				if (board.IsLineComplete(y))
+				{
+					CompletedLines.push_back(y);
+				}
+			}
+
+			bool bFancyFlash = CompletedLines.size() >= 4;
+			bool bSimpleFlash = !CompletedLines.empty();
+			CompleteLineAnimBudget = 150 * 1 * bSimpleFlash + 150 * 4 * bFancyFlash;
 		}
 		else
 		{

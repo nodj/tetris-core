@@ -41,12 +41,14 @@ public:
 	const Cell& At(i32 x, i32 y) const { return *const_cast<Board*>(this)->AtInternal(x, y, BlockLayer::Merged); }
 	Cell& At(i32 x, i32 y) { return *AtInternal(x, y, BlockLayer::Merged); }
 
-// 	bool TryBlit(const Span& span, i32 xOrigin, i32 yOrigin, Cell SetValue);
+	bool IsLineComplete(i32 y) const;
 
 	bool Blit(const Span& span, i32 xOrigin, i32 yOrigin, Cell Value, BlockLayer TestLayer, BlockLayer BlitLayer);
 
 	void Clear();
 	void Fill(Cell Value);
+	void FillLine(i32 y, Cell Value);
+	void DeleteLines(std::vector<i32> CompletedLines);
 
 	void ResetToConsolidated();
 	void Consolidate();

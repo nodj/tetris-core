@@ -127,7 +127,8 @@ private:
 	i32 MovingBlockY = 0;
 	EOrient MovingBlockOrient = Orient_N;
 
-	bool bInLineDeleteAnim = false;
+	std::vector<i32> CompletedLines;
+	u32 CompleteLineAnimBudget = 0;
 	RandomPieceGenerator<> RPG;
 };
 
