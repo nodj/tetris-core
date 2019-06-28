@@ -2,34 +2,33 @@
 
 #include "types.h"
 #include "GameplayInput.h"
-#include "ILogicTickableSystem.h"
 
 namespace tc
 {
 
-class InputTracker : public ILogicTickableSystem
+class InputTracker
 {
 public:
 	InputTracker();
 	void RegisterInput(EGameplayInput Input);
 
-	bool IsAnyActionDown() const;
+	bool IsStartInvoked() const { return actionStart; }
+	bool IsSelectInvoked() const { return actionSelect; }
 	i32 GetHorizontalDirection() const;
+	i32 GetRotation() const;
+	bool IsHardDropInvoked() const { return actionHardDrop; }
 
-	virtual void LogicalTick(i32 LogicTickCount) override;
-	virtual void EndFrame(i32 LogicTickCount) override;
+	void EndFrame();
 
 private:
-	// Input state
 	bool btnLeftDown:1;
 	bool btnRightDown:1;
 	bool actionRotateLeft:1;
 	bool actionRotateRight:1;
+	bool actionHardDrop:1;
 
-	// Input interpretation
-	i32 btnLeftCount;
-	i32 btnRightCount;
-	i32 moveDir; // right when > 0
+	bool actionStart:1;
+	bool actionSelect:1;
 };
 
 } // ns tc

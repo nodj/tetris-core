@@ -8,8 +8,6 @@ StandardGameMode::StandardGameMode(i32 Width, i32 Height)
 	, WaitState(this)
 	, PlayState(this)
 {
-	Tracker.AddTickableSystem(&Inputs);
-
 	Tracker.SetNextStateNode(&WaitState, &PlayState);
 	Tracker.SetNextStateNode(&PlayState, &WaitState);
 	Tracker.SetStartState(&WaitState);
@@ -22,9 +20,10 @@ void StandardGameMode::RegisterInput(EGameplayInput Input)
 
 void StandardGameMode::InternalTick(i32 ms)
 {
-	bool bShouldTickAgain = Tracker.Tick(ms);
+	if (Tracker.Tick(ms))
+		Inputs.EndFrame();
 
-	if (!bShouldTickAgain)
+	if (!Tracker.IsTickable())
 		SetOver();
 }
 
@@ -64,7 +63,7 @@ bool WaitStateNode::Tick(i32 LogicTick)
 	}
 
 	// exit condition check
-	if (Mode->Inputs.IsAnyActionDown())
+	if (Mode->Inputs.IsStartInvoked())
 	{
 		return false; // goto fadeout anim loop
 	}
@@ -102,6 +101,7 @@ void PlayStateNode::Enter()
 	TickIndex = 0;
 
 	GravityTickBudget = 0;
+	GravityTickTreshold = 300;
 
 	MovingBlockNature = Piece_None;
 	MovingBlockX = 0;
@@ -129,6 +129,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 	// get moving part
 	i32 PreviousX = MovingBlockX;
 	i32 PreviousY = MovingBlockY;
+	i32 PreviousO = MovingBlockOrient;
 
 	// Spawn a new piece
 	if (MovingBlockNature == EPiece::Piece_None)
@@ -137,6 +138,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		{
 			// Spawn a new piece !
 			MovingBlockNature = RPG.pop();
+			MovingBlockOrient = Orient_N;
 			MovingBlockX = board.GetWidth()/2;
 			MovingBlockY = board.GetHeight();
 
@@ -148,16 +150,15 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		}
 	}
 
-	const Span& span = GetSpan(MovingBlockNature, MovingBlockOrient);
+	Span span = GetSpan(MovingBlockNature, MovingBlockOrient);
 	Cell Value;
 	Value.state = true;
 	Value.nature = MovingBlockNature;
 
-	// Gravity check
 	bool bMustConsolidate = false;
 	if (MovingBlockNature != EPiece::Piece_None)
 	{
-		// consume move inputs
+		// Consume move inputs
 		if (i32 HzDirection = Mode->Inputs.GetHorizontalDirection())
 		{
 			// reset state if we change direction
@@ -193,14 +194,27 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			hzit.LastDirection = 0;
 		}
 
-		// consume gravity
-		if (GravityTickBudget >= GravityTickTreshold)
+		// Consume Rotation
+		if (i32 Rotation = Mode->Inputs.GetRotation())
 		{
-			GravityTickBudget -= GravityTickTreshold;
+			EOrient NewOrient = EOrient((MovingBlockOrient + Rotation + 4) % 4);
+			Span TestSpan = GetSpan(MovingBlockNature, NewOrient);
+			if (board.Blit(TestSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+			{
+				MovingBlockOrient = NewOrient;
+				span = TestSpan;
+			}
+		}
+
+		// Consume gravity
+		bool bHardDrop = Mode->Inputs.IsHardDropInvoked();
+		u32 UsedGravityTickTreshold = bHardDrop ? 0 : GravityTickTreshold;
+		while (GravityTickBudget >= UsedGravityTickTreshold)
+		{
+			GravityTickBudget -= UsedGravityTickTreshold;
 
 			i32 GravityDisplacement = 1;
 			i32 TestY = MovingBlockY - GravityDisplacement;
-
 			if (board.Blit(span, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 			{
 				MovingBlockY = TestY;
@@ -208,6 +222,8 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			else
 			{
 				bMustConsolidate = true;
+				GravityTickBudget = 0;
+				break;
 			}
 		}
 
@@ -224,7 +240,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		else
 		{
 			// update board if state changed
-			if (PreviousX != MovingBlockX || PreviousY != MovingBlockY)
+			if (PreviousX != MovingBlockX || PreviousY != MovingBlockY || PreviousO != MovingBlockOrient)
 			{
 				board.ResetToConsolidated();
 				board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Merged);
@@ -232,7 +248,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		}
 	}
 
-	return !Mode->Inputs.IsAnyActionDown();
+	return !Mode->Inputs.IsStartInvoked();
 }
 
 

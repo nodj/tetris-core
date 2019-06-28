@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.h"
-#include "ILogicTickableSystem.h"
 #include "LogicTickConverter.h"
 
 #include <map>
@@ -56,25 +55,19 @@ class StateTracker
 
 public:
 	using StateNodeId = u32;
-	using OutcomeId = u8;
+	using OutcomeId = u32;
 
 	// return true when insertion succeed
 	bool SetNextStateNode(IStateNode* FromStateNode, IStateNode* ToStateNode, OutcomeId WhenOutcome=0);
 	bool SetStartState(IStateNode* StateNode);
 
-	// Timing
-	// return true if tickable
+	// return true if a Tick was consumed
 	bool Tick(i32 ms);
-	bool IsTickable() { return CurrentStateNode!= nullptr; }
-
-	LogicTickConverter& GetTicker()
-	{ return TickConverter; }
-
-	void AddTickableSystem(ILogicTickableSystem* Tickable);
+	bool IsTickable() const { return CurrentStateNode != nullptr; }
 
 private:
 	AbsoluteOutcomeCode MakeCode(const IStateNode& From, OutcomeId WhenOutcome)
-	{ return u64(From.Id()) << 8 | WhenOutcome; }
+	{ return u64(From.Id()) << 32 | WhenOutcome; }
 
 	IStateNode* Advance(IStateNode* FromStateNode, OutcomeId OnOutcome);
 
@@ -89,13 +82,11 @@ private:
 
 	// machine description
 	std::map<AbsoluteOutcomeCode, IStateNode*> NextStateNode;
-	std::map<StateNodeId, IStateNode*> StateNodes;
 
 	IStateNode* CurrentStateNode = nullptr;
 	ESubState subState = ESS_Enter;
 
 	LogicTickConverter TickConverter;
-	std::vector<ILogicTickableSystem*> TickableSystems;
 };
 
 } // ns tc

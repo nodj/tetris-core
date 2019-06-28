@@ -1,8 +1,5 @@
 #include "StateTracker.h"
 
-#include "ILogicTickableSystem.h"
-
-
 namespace tc
 {
 
@@ -47,12 +44,7 @@ bool StateTracker::Tick(i32 ms)
 
 		if (LogicTickCount == 0)
 		{
-			return true; // skip this frame (not enough time elapsed)
-		}
-
-		for (ILogicTickableSystem* TickableSystem : TickableSystems)
-		{
-			TickableSystem->LogicalTick(LogicTickCount);
+			return false; // skip this frame (not enough time elapsed)
 		}
 	}
 
@@ -82,21 +74,7 @@ bool StateTracker::Tick(i32 ms)
 			break;
 	}
 
-	if (bTickableFrame)
-	{
-		for (ILogicTickableSystem* TickableSystem : TickableSystems)
-		{
-			TickableSystem->EndFrame(LogicTickCount);
-		}
-	}
-
-	return IsTickable();
-}
-
-void StateTracker::AddTickableSystem(ILogicTickableSystem* Tickable)
-{
-	if (Tickable)
-		TickableSystems.push_back(Tickable);
+	return bTickableFrame;
 }
 
 IStateNode* StateTracker::Advance(IStateNode* FromStateNode, OutcomeId OnOutcome)

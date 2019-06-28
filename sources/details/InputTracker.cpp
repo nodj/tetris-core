@@ -11,18 +11,25 @@ InputTracker::InputTracker()
 	, btnRightDown(0)
 	, actionRotateLeft(0)
 	, actionRotateRight(0)
-	, btnLeftCount(0)
-	, btnRightCount(0)
-	, moveDir(0)
+	, actionHardDrop(0)
+	, actionStart(0)
+	, actionSelect(0)
 {
 }
 
 void InputTracker::RegisterInput(EGameplayInput Input)
 {
-	// Set state (down or not) of buttons.
-	// Tick interpret that state.
 	switch (Input)
 	{
+		case EGameplayInput::Start:
+			actionStart = true;
+			break;
+		case EGameplayInput::Select:
+			actionSelect = true;
+			break;
+		case EGameplayInput::HardDrop:
+			actionHardDrop = true;
+			break;
 		case EGameplayInput::RotateLeft:
 			actionRotateLeft = true;
 			break;
@@ -46,27 +53,23 @@ void InputTracker::RegisterInput(EGameplayInput Input)
 	}
 }
 
-bool InputTracker::IsAnyActionDown() const
-{
-	return actionRotateLeft || actionRotateRight;
-}
-
 i32 InputTracker::GetHorizontalDirection() const
 {
 	return btnRightDown - btnLeftDown;
 }
 
-void InputTracker::LogicalTick(i32 LogicTickCount)
+i32 InputTracker::GetRotation() const
 {
-	btnRightCount = btnRightDown ? btnRightCount + LogicTickCount : 0;
-	btnLeftCount = btnLeftDown ? btnLeftCount + LogicTickCount : 0;
-	moveDir = LogicTickCount * (btnRightDown - btnLeftDown);
+	return actionRotateRight - actionRotateLeft;
 }
 
-void InputTracker::EndFrame(i32 /*LogicTickCount*/)
+void InputTracker::EndFrame()
 {
 	actionRotateLeft = false;
 	actionRotateRight = false;
+	actionStart = false;
+	actionSelect = false;
+	actionHardDrop = false;
 }
 
 } // ns tc
