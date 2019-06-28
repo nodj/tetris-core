@@ -9,6 +9,7 @@
 #include <map>
 #include <numeric>
 #include <algorithm>
+#include <random>
 
 
 namespace tc
@@ -78,7 +79,10 @@ private:
 		{
 			i32 Source = 0;
 			std::generate(seven.begin(), seven.end(), [&Source]{ return EPiece(Source++); });
-			std::random_shuffle(seven.begin(), seven.end());
+
+			std::random_device rd;
+			std::mt19937 g(rd());
+			std::shuffle(seven.begin(), seven.end(), g);
 		}
 		std::array<EPiece, 7> seven;
 	};
