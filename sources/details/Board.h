@@ -47,7 +47,6 @@ public:
 
 	void Clear();
 	void Fill(Cell Value);
-	void FillLine(i32 y, Cell Value);
 	void DeleteLines(std::vector<i32> CompletedLines);
 
 	void ResetToConsolidated();

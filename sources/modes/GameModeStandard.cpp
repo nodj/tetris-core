@@ -230,11 +230,14 @@ bool PlayStateNode::Tick(i32 LogicTick)
 
 		// Consume gravity
 		bool bHardDrop = Mode->Inputs.IsHardDropInvoked();
-		u32 UsedGravityTickTreshold = bHardDrop ? 0 : GravityTickTreshold;
+		bool bSoftDrop = Mode->Inputs.IsSoftDropInvoked();
+		u32 UsedGravityTickTreshold = bHardDrop ? 0 : bSoftDrop ? AutoRepeatSpeed : GravityTickTreshold;
+
 		while (GravityTickBudget >= UsedGravityTickTreshold)
 		{
 			GravityTickBudget -= UsedGravityTickTreshold;
-
+			if (bHardDrop || bSoftDrop)
+				GravityTickBudget = 0;
 			i32 GravityDisplacement = 1;
 			i32 TestY = MovingBlockY - GravityDisplacement;
 			if (board.Blit(span, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))

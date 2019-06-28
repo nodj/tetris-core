@@ -14,6 +14,8 @@ enum EGameplayInput
 	MoveLeftReleased,
 	MoveRightPressed,
 	MoveRightReleased,
+	MoveDownPressed,
+	MoveDownReleased,
 
 	HardDrop,
 };

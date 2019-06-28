@@ -9,6 +9,7 @@ namespace tc
 InputTracker::InputTracker()
 	: btnLeftDown(0)
 	, btnRightDown(0)
+	, btnDownDown(0)
 	, actionRotateLeft(0)
 	, actionRotateRight(0)
 	, actionHardDrop(0)
@@ -48,19 +49,15 @@ void InputTracker::RegisterInput(EGameplayInput Input)
 		case EGameplayInput::MoveRightReleased:
 			btnRightDown = false;
 			break;
+		case EGameplayInput::MoveDownPressed:
+			btnDownDown = true;
+			break;
+		case EGameplayInput::MoveDownReleased:
+			btnDownDown = false;
+			break;
 		default:
 			assert(false);
 	}
-}
-
-i32 InputTracker::GetHorizontalDirection() const
-{
-	return btnRightDown - btnLeftDown;
-}
-
-i32 InputTracker::GetRotation() const
-{
-	return actionRotateRight - actionRotateLeft;
 }
 
 void InputTracker::EndFrame()
