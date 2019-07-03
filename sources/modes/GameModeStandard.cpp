@@ -141,7 +141,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			// Spawn a new piece !
 			MovingBlockNature = RPG.pop();
 			MovingBlockOrient = Orient_N;
-			MovingBlockX = board.GetWidth()/2;
+			MovingBlockX = (board.GetWidth()-3)/2;
 			MovingBlockY = board.GetHeight();
 
 			// Validate that we spawn on an available area
