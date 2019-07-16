@@ -177,7 +177,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 	Value.state = true;
 	Value.nature = MovingBlockNature;
 
-	bool bMustConsolidate = false;
+	bool bMustLock = false;
 	if (MovingBlockNature != EPiece::Piece_None)
 	{
 		// Consume move inputs
@@ -282,14 +282,15 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			}
 			else
 			{
-				bMustConsolidate = true;
+				bMustLock = true;
 				GravityTickBudget = 0;
 				break;
 			}
 		}
 
-		if (bMustConsolidate)
+		if (bMustLock)
 		{
+			Value.locked = true;
 			board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
 			board.ResetToConsolidated();
 

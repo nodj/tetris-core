@@ -12,11 +12,12 @@ namespace tc
 
 struct Cell
 {
-	Cell(): state(false), nature(EPiece::Piece_None), phantom(false) {}
+	Cell(): state(false), nature(EPiece::Piece_None), phantom(false), locked(false) {}
 
 	bool state:1; // on-off
 	EPiece nature:3; // what piece type it is from
 	bool phantom:1; // modifier to handle phantom state
+	bool locked:1; // if the cell is locked or movable
 };
 
 /*

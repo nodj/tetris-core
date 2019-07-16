@@ -17,7 +17,7 @@ public:
 	i32 GetHorizontalDirection() const { return btnRightDown - btnLeftDown; }
 	i32 GetRotation() const { return actionRotateRight - actionRotateLeft; }
 	bool IsHardDropInvoked() const { return actionHardDrop; }
-	bool IsSoftDropInvoked() const { return btnDownDown; }
+	bool IsSoftDropInvoked() const { return btnDownDown && GetHorizontalDirection() == 0; }
 
 	void EndFrame();
 
