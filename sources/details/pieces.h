@@ -11,7 +11,7 @@ enum EPiece : u8
 	Piece_I = 0,
 	Piece_L = 1,
 	Piece_J = 2,
-	Piece_N = 3,
+	Piece_S = 3,
 	Piece_Z = 4,
 	Piece_O = 5,
 	Piece_T = 6,
@@ -34,7 +34,6 @@ struct Span
 };
 
 const Span& GetSpan(EPiece p, EOrient o);
-
 
 struct FourPixels
 {
