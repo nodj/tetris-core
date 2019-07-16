@@ -51,7 +51,13 @@ public:
 	RandomPieceGenerator()
 		: CurrentIndex(0)
 	{
+		Reset();
+	}
+
+	void Reset()
+	{
 		std::generate(Buffer.begin(), Buffer.end(), []{return SevenPack();});
+		CurrentIndex = 0;
 	}
 
 	EPiece pop()

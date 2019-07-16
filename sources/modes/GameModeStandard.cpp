@@ -108,6 +108,7 @@ void PlayStateNode::Enter()
 	MovingBlockY = 0;
 	MovingBlockOrient = Orient_N;
 
+	RPG.Reset();
 	CompletedLines.clear();
 	CompletedLines.reserve(4);
 	CompleteLineAnimBudget = 0;
