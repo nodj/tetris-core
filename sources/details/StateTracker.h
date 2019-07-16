@@ -18,6 +18,8 @@ struct IStateNode
 		, bCanFadeOut(0)
 	{}
 
+	virtual ~IStateNode() = default;
+
 	// return the identifier of this state
 	virtual u32 Id() const = 0;
 
