@@ -18,6 +18,7 @@ struct Cell
 	EPiece nature:3; // what piece type it is from
 	bool phantom:1; // modifier to handle phantom state
 	bool locked:1; // if the cell is locked or movable
+	Cell AsPhantom() { Cell Phantom; Phantom.nature = nature; Phantom.phantom = true; return Phantom; }
 };
 
 /*

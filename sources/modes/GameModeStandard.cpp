@@ -266,26 +266,44 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		}
 
 		// Consume gravity
-		bool bHardDrop = Mode->Inputs.IsHardDropInvoked();
-		bool bSoftDrop = Mode->Inputs.IsSoftDropInvoked();
-		u32 UsedGravityTickTreshold = bHardDrop ? 0 : bSoftDrop ? AutoRepeatSpeed : GravityTickTreshold;
 
-		while (GravityTickBudget >= UsedGravityTickTreshold)
+
+
+		i32 HardDroppedY = MovingBlockY;
+		while (board.Blit(span, MovingBlockX, HardDroppedY-1, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 		{
-			GravityTickBudget -= UsedGravityTickTreshold;
-			if (bHardDrop || bSoftDrop)
-				GravityTickBudget = 0;
-			i32 GravityDisplacement = 1;
-			i32 TestY = MovingBlockY - GravityDisplacement;
-			if (board.Blit(span, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+			HardDroppedY--;
+		}
+
+		bool bHardDrop = Mode->Inputs.IsHardDropInvoked();
+		if (bHardDrop)
+		{
+			MovingBlockY = HardDroppedY;
+			bMustLock = true;
+		}
+		else
+		{
+			// Normal gravity evaluation
+			bool bSoftDrop = Mode->Inputs.IsSoftDropInvoked();
+			u32 UsedGravityTickTreshold = bSoftDrop ? AutoRepeatSpeed : GravityTickTreshold;
+
+			while (GravityTickBudget >= UsedGravityTickTreshold)
 			{
-				MovingBlockY = TestY;
-			}
-			else
-			{
-				bMustLock = true;
-				GravityTickBudget = 0;
-				break;
+				GravityTickBudget -= UsedGravityTickTreshold;
+				if (bHardDrop || bSoftDrop)
+					GravityTickBudget = 0;
+				i32 GravityDisplacement = 1;
+				i32 TestY = MovingBlockY - GravityDisplacement;
+				if (board.Blit(span, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+				{
+					MovingBlockY = TestY;
+				}
+				else
+				{
+					bMustLock = true;
+					GravityTickBudget = 0;
+					break;
+				}
 			}
 		}
 
@@ -299,6 +317,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			MovingBlockNature = EPiece::Piece_None;
 			MovingBlockX = -1;
 			MovingBlockY = -1;
+			GravityTickBudget = 0;
 
 			// complete lines
 			for (i32 y = 0; y < board.GetHeight(); ++y)
@@ -319,6 +338,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			if (PreviousX != MovingBlockX || PreviousY != MovingBlockY || PreviousO != MovingBlockOrient)
 			{
 				board.ResetToConsolidated();
+				board.Blit(span, MovingBlockX, HardDroppedY, Value.AsPhantom(), Board::BlockLayer::None, Board::BlockLayer::Merged);
 				board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Merged);
 			}
 		}
