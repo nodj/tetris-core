@@ -3,10 +3,8 @@
 #include "pieces.h"
 #include "types.h"
 
-
 namespace tc
 {
-
 
 // SuperRotationSystem: https://tetris.fandom.com/wiki/SRS
 // Note: weird double {{ }} syntax is required for std::arrays initialization...

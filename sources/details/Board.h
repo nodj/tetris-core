@@ -1,11 +1,10 @@
 #pragma once
 
+#include "pieces.h"
 #include "types.h"
 
 #include <array>
-#include <assert.h>
 #include <vector>
-#include "pieces.h"
 
 namespace tc
 {

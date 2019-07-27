@@ -1,7 +1,7 @@
 #include "InputTracker.h"
 
-#include <bitset>
 #include <assert.h>
+#include <bitset>
 
 namespace tc
 {

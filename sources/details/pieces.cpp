@@ -1,7 +1,8 @@
 #include "pieces.h"
 #include "types.h"
-#include <bitset>
+
 #include <assert.h>
+#include <bitset>
 
 namespace tc
 {

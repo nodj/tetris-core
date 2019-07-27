@@ -1,7 +1,7 @@
 #pragma once
 
-#include "details/types.h"
 #include "details/GameplayInput.h"
+#include "details/types.h"
 
 
 namespace tc
