@@ -266,9 +266,6 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		}
 
 		// Consume gravity
-
-
-
 		i32 HardDroppedY = MovingBlockY;
 		while (board.Blit(span, MovingBlockX, HardDroppedY-1, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 		{

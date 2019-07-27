@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../details/types.h"
-#include "../details/GameplayInput.h"
+#include "details/types.h"
+#include "details/GameplayInput.h"
 
 
 namespace tc
@@ -22,7 +22,8 @@ protected:
 private:
 	// handle offset between int ticks and elapsed time
 	float lostTime = 0;
-	// pollable flag thet declares this gamemode over
+
+	// Pollable flag that declares this GameMode over
 	bool bIsOver = 0;
 };
 

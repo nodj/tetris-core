@@ -1,14 +1,15 @@
 #pragma once
 #include "GameMode.h"
 
-#include "../details/Board.h"
-#include "../details/InputTracker.h"
-#include "../details/pieces.h"
-#include "../details/StateTracker.h"
+#include "details/Board.h"
+#include "details/InputTracker.h"
+#include "details/PieceGenerator.h"
+#include "details/pieces.h"
+#include "details/StateTracker.h"
 
+#include <algorithm>
 #include <map>
 #include <numeric>
-#include <algorithm>
 #include <random>
 
 
@@ -23,6 +24,7 @@ enum SubState
 	End, // death anim
 	_count,
 };
+
 
 class WaitStateNode : public IStateNode
 {
@@ -39,62 +41,6 @@ private:
 
 	i32 CurrentFlashLine;
 	i32 CleanupColumn;
-};
-
-template<i32 PackCount=1>
-class RandomPieceGenerator
-{
-	static const i32 ActualPackCount = PackCount + 1;
-	static const i32 PieceCount = ActualPackCount * 7;
-
-public:
-	RandomPieceGenerator()
-		: CurrentIndex(0)
-	{
-		Reset();
-	}
-
-	void Reset()
-	{
-		std::generate(Buffer.begin(), Buffer.end(), []{return SevenPack();});
-		CurrentIndex = 0;
-	}
-
-	EPiece pop()
-	{
-		EPiece Result = Buffer[CurrentIndex/7].seven[CurrentIndex%7];
-
-		// Advance
-		++CurrentIndex;
-		CurrentIndex %= PieceCount;
-
-		// replace consumed pack
-		if (CurrentIndex % 7 == 0)
-		{
-			i32 LastPackIndex = (CurrentIndex/7)-1;
-			LastPackIndex = (LastPackIndex + ActualPackCount) % ActualPackCount;
-			Buffer[LastPackIndex] = SevenPack();
-		}
-		return Result;
-	}
-
-private:
-	struct SevenPack
-	{
-		SevenPack()
-		{
-			i32 Source = 0;
-			std::generate(seven.begin(), seven.end(), [&Source]{ return EPiece(Source++); });
-
-			std::random_device rd;
-			std::mt19937 g(rd());
-			std::shuffle(seven.begin(), seven.end(), g);
-		}
-		std::array<EPiece, 7> seven;
-	};
-
-	std::array<SevenPack, ActualPackCount> Buffer;
-	i32 CurrentIndex = 0;
 };
 
 
@@ -135,7 +81,7 @@ private:
 
 	std::vector<i32> CompletedLines;
 	u32 CompleteLineAnimBudget = 0;
-	RandomPieceGenerator<> RPG;
+	PieceGenerator<> RPG;
 };
 
 
