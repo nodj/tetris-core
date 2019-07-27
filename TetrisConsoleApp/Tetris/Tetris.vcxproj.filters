@@ -54,6 +54,9 @@
     <ClCompile Include="..\..\sources\details\LogicTickConverter.cpp">
       <Filter>Source Files\tetris-core\sources\details</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\sources\details\LevelManager.cpp">
+      <Filter>Source Files\tetris-core\sources\details</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\sources\TetrisHost.h">
@@ -87,6 +90,9 @@
       <Filter>Source Files\tetris-core\sources\details</Filter>
     </ClInclude>
     <ClInclude Include="..\..\sources\details\LogicTickConverter.h">
+      <Filter>Source Files\tetris-core\sources\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sources\details\LevelManager.h">
       <Filter>Source Files\tetris-core\sources\details</Filter>
     </ClInclude>
   </ItemGroup>

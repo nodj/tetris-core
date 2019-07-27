@@ -99,16 +99,15 @@ void PlayStateNode::Enter()
 	bCanFadeOut = false;
 
 	TickIndex = 0;
-
 	GravityTickBudget = 0;
-	GravityTickTreshold = 300;
 
 	MovingBlockNature = Piece_None;
+	MovingBlockOrient = Orient_N;
 	MovingBlockX = 0;
 	MovingBlockY = 0;
-	MovingBlockOrient = Orient_N;
 
 	RPG.Reset();
+	Level.Reset();
 	CompletedLines.clear();
 	CompletedLines.reserve(4);
 	CompleteLineAnimBudget = 0;
@@ -178,7 +177,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 	Value.state = true;
 	Value.nature = MovingBlockNature;
 
-	bool bMustLock = false;
+	bool bMustLockDown = false;
 	if (MovingBlockNature != EPiece::Piece_None)
 	{
 		// Consume move inputs
@@ -265,28 +264,33 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			}
 		}
 
-		// Consume gravity
+		// Compute phantom
 		i32 HardDroppedY = MovingBlockY;
 		while (board.Blit(span, MovingBlockX, HardDroppedY-1, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 		{
 			HardDroppedY--;
 		}
 
+		// Consume gravity
 		bool bHardDrop = Mode->Inputs.IsHardDropInvoked();
 		if (bHardDrop)
 		{
 			MovingBlockY = HardDroppedY;
-			bMustLock = true;
+			bMustLockDown = true;
 		}
 		else
 		{
 			// Normal gravity evaluation
-			bool bSoftDrop = Mode->Inputs.IsSoftDropInvoked();
-			u32 UsedGravityTickTreshold = bSoftDrop ? AutoRepeatSpeed : GravityTickTreshold;
+			u32 GravityThreshold = Level.GetCurrentFallSpeed();
 
-			while (GravityTickBudget >= UsedGravityTickTreshold)
+			// TDG.5.5: SoftDrop is 20x faster than normal drop
+			bool bSoftDrop = Mode->Inputs.IsSoftDropInvoked();
+			if (bSoftDrop)
+				GravityThreshold /= 20;
+
+			while (GravityTickBudget >= GravityThreshold)
 			{
-				GravityTickBudget -= UsedGravityTickTreshold;
+				GravityTickBudget -= GravityThreshold;
 				if (bHardDrop || bSoftDrop)
 					GravityTickBudget = 0;
 				i32 GravityDisplacement = 1;
@@ -297,15 +301,16 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				}
 				else
 				{
-					bMustLock = true;
+					bMustLockDown = true;
 					GravityTickBudget = 0;
 					break;
 				}
 			}
 		}
 
-		if (bMustLock)
+		if (bMustLockDown)
 		{
+			// #tc_todo TDG.5.7: Extended/Infinite/Classic LockDown
 			Value.locked = true;
 			board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
 			board.ResetToConsolidated();
@@ -325,9 +330,13 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				}
 			}
 
-			bool bFancyFlash = CompletedLines.size() >= 4;
-			bool bSimpleFlash = !CompletedLines.empty();
-			CompleteLineAnimBudget = 150 * 1 * bSimpleFlash + 150 * 4 * bFancyFlash;
+			if (u32 ClearedLinesCount = (u32)CompletedLines.size())
+			{
+				Level.RegisterClearedLines(ClearedLinesCount);
+				bool bFancyFlash = ClearedLinesCount >= 4;
+				bool bSimpleFlash = ClearedLinesCount > 0;
+				CompleteLineAnimBudget = 150 * 1 * bSimpleFlash + 150 * 4 * bFancyFlash;
+			}
 		}
 		else
 		{

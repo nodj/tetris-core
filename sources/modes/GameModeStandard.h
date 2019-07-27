@@ -3,6 +3,7 @@
 
 #include "details/Board.h"
 #include "details/InputTracker.h"
+#include "details/LevelManager.h"
 #include "details/PieceGenerator.h"
 #include "details/pieces.h"
 #include "details/StateTracker.h"
@@ -58,11 +59,10 @@ private:
 	u32 TickIndex = 0;
 
 	u32 GravityTickBudget = 0;
-	u32 GravityTickTreshold = 1000;
 
 	i32 LastMoveDir = 0;
 	u32 LastMoveTick = 100;
-	u32 AutoRepeatDelay = 170;
+	u32 AutoRepeatDelay = 170; // TDG.5.2: Approx 0.3s
 	u32 AutoRepeatSpeed = 50;
 	u32 StartMoveXTick = u32(-1);
 
@@ -82,6 +82,7 @@ private:
 	std::vector<i32> CompletedLines;
 	u32 CompleteLineAnimBudget = 0;
 	PieceGenerator<> RPG;
+	LevelManager Level;
 };
 
 

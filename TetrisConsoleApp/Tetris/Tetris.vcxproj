@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\sources\details\Board.cpp" />
     <ClCompile Include="..\..\sources\details\InputTracker.cpp" />
+    <ClCompile Include="..\..\sources\details\LevelManager.cpp" />
     <ClCompile Include="..\..\sources\details\LogicTickConverter.cpp" />
     <ClCompile Include="..\..\sources\details\pieces.cpp" />
     <ClCompile Include="..\..\sources\details\StateTracker.cpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="..\..\sources\details\Board.h" />
     <ClInclude Include="..\..\sources\details\GameplayInput.h" />
     <ClInclude Include="..\..\sources\details\InputTracker.h" />
+    <ClInclude Include="..\..\sources\details\LevelManager.h" />
     <ClInclude Include="..\..\sources\details\LogicTickConverter.h" />
     <ClInclude Include="..\..\sources\details\PieceGenerator.h" />
     <ClInclude Include="..\..\sources\details\pieces.h" />
@@ -136,6 +138,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
