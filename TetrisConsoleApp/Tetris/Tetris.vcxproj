@@ -24,6 +24,7 @@
     <ClCompile Include="..\..\sources\details\LevelManager.cpp" />
     <ClCompile Include="..\..\sources\details\LogicTickConverter.cpp" />
     <ClCompile Include="..\..\sources\details\pieces.cpp" />
+    <ClCompile Include="..\..\sources\details\SRS.cpp" />
     <ClCompile Include="..\..\sources\details\StateTracker.cpp" />
     <ClCompile Include="..\..\sources\modes\GameMode.cpp" />
     <ClCompile Include="..\..\sources\modes\GameModeStandard.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="..\..\sources\details\LogicTickConverter.h" />
     <ClInclude Include="..\..\sources\details\PieceGenerator.h" />
     <ClInclude Include="..\..\sources\details\pieces.h" />
+    <ClInclude Include="..\..\sources\details\SRS.h" />
     <ClInclude Include="..\..\sources\details\StateTracker.h" />
     <ClInclude Include="..\..\sources\details\types.h" />
     <ClInclude Include="..\..\sources\modes\GameMode.h" />

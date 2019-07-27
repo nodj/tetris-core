@@ -1,4 +1,5 @@
 #include "GameModeStandard.h"
+#include "../details/SRS.h"
 
 namespace tc
 {
@@ -222,32 +223,8 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			EOrient TestOrient = EOrient((MovingBlockOrient + Rotation + 4) % 4);
 			Span TestSpan = GetSpan(MovingBlockNature, TestOrient);
 
-			// SuperRotationSystem: https://tetris.fandom.com/wiki/SRS
-			static const i8 SRSOffsets[16][5][2] = {
-				// J, L, S, T, Z Tetromino Wall Kick Data
-				{{ 0, 0}, {-1, 0}, {-1,-1}, { 0, 2}, {-1, 2}}, // 3 -> 0
-				{{ 0, 0}, {-1, 0}, {-1, 1}, { 0,-2}, {-1,-2}}, // 0 -> 1
-				{{ 0, 0}, { 1, 0}, { 1,-1}, { 0, 2}, { 1, 2}}, // 1 -> 2
-				{{ 0, 0}, { 1, 0}, { 1, 1}, { 0,-2}, { 1,-2}}, // 2 -> 3
-				{{ 0, 0}, { 1, 0}, { 1,-1}, { 0, 2}, { 1, 2}}, // 1 -> 0
-				{{ 0, 0}, {-1, 0}, {-1, 1}, { 0,-2}, {-1,-2}}, // 2 -> 1
-				{{ 0, 0}, {-1, 0}, {-1,-1}, { 0, 2}, {-1, 2}}, // 3 -> 2
-				{{ 0, 0}, { 1, 0}, { 1, 1}, { 0,-2}, { 1,-2}}, // 0 -> 3
-
-				// I Tetromino Wall Kick Data
-				{{ 0, 0}, { 1, 0}, {-2, 0}, { 1,-2}, {-2, 1}}, // 3 -> 0
-				{{ 0, 0}, {-2, 0}, { 1, 0}, {-2,-1}, { 1, 2}}, // 0 -> 1
-				{{ 0, 0}, {-1, 0}, { 2, 0}, {-1, 2}, { 2,-1}}, // 1 -> 2
-				{{ 0, 0}, { 2, 0}, {-1, 0}, { 2, 1}, {-1,-2}}, // 2 -> 3
-				{{ 0, 0}, { 2, 0}, {-1, 0}, { 2, 1}, {-1,-2}}, // 1 -> 0
-				{{ 0, 0}, { 1, 0}, {-2, 0}, { 1,-2}, {-2, 1}}, // 2 -> 1
-				{{ 0, 0}, {-2, 0}, { 1, 0}, {-2,-1}, { 1, 2}}, // 3 -> 2
-				{{ 0, 0}, {-1, 0}, { 2, 0}, {-1, 2}, { 2,-1}}  // 0 -> 3
-			};
-
-			bool bIsI = MovingBlockNature == EPiece::Piece_I;
-			bool bisLeft = Rotation == -1;
-			const auto& line = SRSOffsets[bIsI*8 + bisLeft*4 + i32(TestOrient)];
+			bool bIsLeftRotation = Rotation == -1;
+			const SRSOffsetLine& line = GetSRSOffsets(MovingBlockNature, TestOrient, bIsLeftRotation);
 
 			for (const auto& offset : line)
 			{
