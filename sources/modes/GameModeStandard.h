@@ -56,15 +56,10 @@ public:
 
 private:
 	class StandardGameMode* Mode = nullptr;
-	u32 TickIndex = 0;
+	u32 GravityTickBudget;
 
-	u32 GravityTickBudget = 0;
-
-	i32 LastMoveDir = 0;
-	u32 LastMoveTick = 100;
-	u32 AutoRepeatDelay = 170; // TDG.5.2: Approx 0.3s
-	u32 AutoRepeatSpeed = 50;
-	u32 StartMoveXTick = u32(-1);
+	u32 AutoRepeatDelay;
+	u32 AutoRepeatSpeed;
 
 	struct HorizontalInputTracker
 	{
@@ -75,9 +70,9 @@ private:
 	HorizontalInputTracker hzit;
 
 	EPiece MovingBlockNature = Piece_None;
+	EOrient MovingBlockOrient = Orient_N;
 	i32 MovingBlockX = 0;
 	i32 MovingBlockY = 0;
-	EOrient MovingBlockOrient = Orient_N;
 
 	std::vector<i32> CompletedLines;
 	u32 CompleteLineAnimBudget = 0;

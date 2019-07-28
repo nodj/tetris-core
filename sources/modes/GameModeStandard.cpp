@@ -95,6 +95,8 @@ bool WaitStateNode::TickFadeOut(i32 LogicTick)
 
 PlayStateNode::PlayStateNode(class StandardGameMode* Mode)
 	: Mode(Mode)
+	, AutoRepeatDelay(170) // TDG.5.2: Approx 0.3s
+	, AutoRepeatSpeed(50)
 	, Level(LevelUpPolicy::VariableWithBonus)
 {
 }
@@ -105,7 +107,6 @@ void PlayStateNode::Enter()
 	bCanTick = true;
 	bCanFadeOut = false;
 
-	TickIndex = 0;
 	GravityTickBudget = 0;
 
 	MovingBlockNature = Piece_None;
@@ -130,7 +131,6 @@ i32 PlayStateNode::GetLogicTickRate()
 
 bool PlayStateNode::Tick(i32 LogicTick)
 {
-	TickIndex += LogicTick;
 	GravityTickBudget += LogicTick;
 
 	Board& board = Mode->board;
