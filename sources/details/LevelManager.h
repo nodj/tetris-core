@@ -7,59 +7,42 @@
 namespace tc
 {
 
+enum LevelUpPolicy
+{
+	// 10 lines to lvl-up
+	Fixed,
+
+	// (5 * level) lines to level-up (eg. 1->2 after 5 lines)
+	// Also, The bonus system speed up the lvl-up process
+	VariableWithBonus,
+};
+
 // Note on implementation:
 //   Internally, levels are handled 0 based (eg. in 0..14)
 class LevelManager
 {
 public:
-	enum LevelUpMode
-	{
-		// 10 lines to lvl-up
-		Fixed,
+	LevelManager(LevelUpPolicy Mode=Fixed, u32 StartLevel=0);
 
-		// (5 * level) lines to level-up (eg. 1->2 after 5 lines)
-		// Also, The bonus system speed up the lvl-up process
-		VariableWithBonus,
-	};
-
-	LevelManager(LevelUpMode Mode=Fixed, u32 StartLevel=0)
-		: Mode(Mode)
-		, StartLevel(StartLevel)
-		, CurrentLevel(0)
-		, ClearedLineCount(0)
-	{
-		Reset();
-	}
-
-	void Reset()
-	{
-		SetCurrentLevel(StartLevel);
-		ClearedLineCount = 0;
-	}
+	void Reset();
 
 	// Declare an additional score of 1,2,3 or 4 lines
-	void RegisterClearedLines(u32 LineCount)
-	{
-		ClearedLineCount += LineCount;
-		switch (Mode)
-		{
-			case VariableWithBonus: // niy
-			case Fixed:
-				SetCurrentLevel(ClearedLineCount/10);
-				break;
-		}
-	}
+	void RegisterClearedLines(u32 LineCount);
 
 	u32 GetCurrentLevel() { return CurrentLevel; }
+
 	u32 GetCurrentFallSpeed();
 
 private:
-	void SetCurrentLevel(u32 Level) { CurrentLevel = Clamp<u32>(Level, 0, 14); }
+	void SetCurrentLevel(u32 Level);
 
-	LevelUpMode Mode;
+	LevelUpPolicy Mode;
 	u32 StartLevel; // 0 based level (eg. in 0..14)
 	u32 CurrentLevel;
 	u32 ClearedLineCount;
+// 	u32 GiftedLineCount; // cool actions are rewarded with additionnal line count;
+	u32 Score;
+	bool Capped;
 };
 
 } // ns tc

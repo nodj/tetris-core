@@ -93,6 +93,12 @@ bool WaitStateNode::TickFadeOut(i32 LogicTick)
 	return true;
 }
 
+PlayStateNode::PlayStateNode(class StandardGameMode* Mode)
+	: Mode(Mode)
+	, Level(LevelUpPolicy::VariableWithBonus)
+{
+}
+
 void PlayStateNode::Enter()
 {
 	bCanFadeIn = false;

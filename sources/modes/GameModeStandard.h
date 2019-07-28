@@ -48,7 +48,7 @@ private:
 class PlayStateNode : public IStateNode
 {
 public:
-	PlayStateNode(class StandardGameMode* Mode) : Mode(Mode) {}
+	PlayStateNode(class StandardGameMode* Mode);
 	virtual u32 Id() const override { return SubState::Play; }
 	virtual void Enter() override;
 	virtual i32 GetLogicTickRate() override;
