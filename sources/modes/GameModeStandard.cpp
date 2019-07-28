@@ -43,7 +43,7 @@ void WaitStateNode::Enter()
 
 i32 WaitStateNode::GetLogicTickRate()
 {
-	return 100; // #tetris_todo no magic numbers
+	return 100;
 }
 
 bool WaitStateNode::Tick(i32 LogicTick)
@@ -173,7 +173,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		}
 	}
 
-	Span span = GetSpan(MovingBlockNature, MovingBlockOrient);
+	Span CurrentSpan = GetSpan(MovingBlockNature, MovingBlockOrient);
 	Cell Value;
 	Value.state = true;
 	Value.nature = MovingBlockNature;
@@ -201,7 +201,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 					hzit.MoveTickBudget -= TickThreshold;
 					hzit.RepeatCount++;
 
-					if (board.Blit(span, MovingBlockX + HzDirection, MovingBlockY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+					if (board.Blit(CurrentSpan, MovingBlockX + HzDirection, MovingBlockY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 					{
 						MovingBlockX += HzDirection;
 					}
@@ -235,7 +235,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 					MovingBlockOrient = TestOrient;
 					MovingBlockX = TestX;
 					MovingBlockY = TestY;
-					span = TestSpan;
+					CurrentSpan = TestSpan;
 					break;
 				}
 			}
@@ -243,7 +243,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 
 		// Compute phantom
 		i32 HardDroppedY = MovingBlockY;
-		while (board.Blit(span, MovingBlockX, HardDroppedY-1, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+		while (board.Blit(CurrentSpan, MovingBlockX, HardDroppedY-1, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 		{
 			HardDroppedY--;
 		}
@@ -272,7 +272,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 					GravityTickBudget = 0;
 				i32 GravityDisplacement = 1;
 				i32 TestY = MovingBlockY - GravityDisplacement;
-				if (board.Blit(span, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+				if (board.Blit(CurrentSpan, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 				{
 					MovingBlockY = TestY;
 				}
@@ -289,7 +289,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		{
 			// #tc_todo TDG.5.7: Extended/Infinite/Classic LockDown
 			Value.locked = true;
-			board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
+			board.Blit(CurrentSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
 			board.ResetToConsolidated();
 
 			// clear MovingBlock state (to spawn a new one in the next frame)
@@ -321,13 +321,13 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			if (PreviousX != MovingBlockX || PreviousY != MovingBlockY || PreviousO != MovingBlockOrient)
 			{
 				board.ResetToConsolidated();
-				board.Blit(span, MovingBlockX, HardDroppedY, Value.AsPhantom(), Board::BlockLayer::None, Board::BlockLayer::Merged);
-				board.Blit(span, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Merged);
+				board.Blit(CurrentSpan, MovingBlockX, HardDroppedY, Value.AsPhantom(), Board::BlockLayer::None, Board::BlockLayer::Merged);
+				board.Blit(CurrentSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Merged);
 			}
 		}
 	}
 
-	return !Mode->Inputs.IsStartInvoked();
+	return !Mode->Inputs.IsSelectInvoked();
 }
 
 

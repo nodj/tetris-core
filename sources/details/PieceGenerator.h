@@ -25,13 +25,18 @@ public:
 
 	void Reset()
 	{
-		std::generate(Buffer.begin(), Buffer.end(), []{return SevenPack();});
 		CurrentIndex = 0;
+		std::generate(Buffer.begin(), Buffer.end(), []{return SevenPack();});
+
+		// Prevent a start with a 'snake' piece
+		i8 i = 4;
+		while(i-- && (Buffer[0][0] == EPiece::Piece_S || Buffer[0][0] == EPiece::Piece_Z))
+			Buffer[0].Randomize();
 	}
 
 	EPiece pop()
 	{
-		EPiece Result = Buffer[CurrentIndex/7].seven[CurrentIndex%7];
+		EPiece Result = Buffer[CurrentIndex/7][CurrentIndex%7];
 
 		// Advance
 		++CurrentIndex;
@@ -54,11 +59,19 @@ private:
 		{
 			i32 Source = 0;
 			std::generate(seven.begin(), seven.end(), [&Source]{ return EPiece(Source++); });
+			Randomize();
+		}
 
+		void Randomize()
+		{
 			std::random_device rd;
 			std::mt19937 g(rd());
 			std::shuffle(seven.begin(), seven.end(), g);
 		}
+
+		EPiece operator [](size_t i) const { return seven[i]; }
+
+	private:
 		std::array<EPiece, 7> seven;
 	};
 
