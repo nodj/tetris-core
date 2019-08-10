@@ -53,8 +53,6 @@ struct IStateNode
 
 class StateTracker
 {
-	using AbsoluteOutcomeCode = u64;
-
 public:
 	using StateNodeId = u32;
 	using OutcomeId = u32;
@@ -68,7 +66,9 @@ public:
 	bool IsTickable() const { return CurrentStateNode != nullptr; }
 
 private:
-	AbsoluteOutcomeCode MakeCode(const IStateNode& From, OutcomeId WhenOutcome)
+	using OutcomeEdgeCode = u64;
+
+	OutcomeEdgeCode MakeCode(const IStateNode& From, OutcomeId WhenOutcome)
 	{ return u64(From.Id()) << 32 | WhenOutcome; }
 
 	IStateNode* Advance(IStateNode* FromStateNode, OutcomeId OnOutcome);
@@ -83,7 +83,7 @@ private:
 	static const ESubState ESS_TickableMask = ESS_FadeIn | ESS_Tick | ESS_FadeOut;
 
 	// machine description
-	std::map<AbsoluteOutcomeCode, IStateNode*> NextStateNode;
+	std::map<OutcomeEdgeCode, IStateNode*> NextStateNode;
 
 	IStateNode* CurrentStateNode = nullptr;
 	ESubState subState = ESS_Enter;

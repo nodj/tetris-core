@@ -8,7 +8,7 @@ bool StateTracker::SetNextStateNode(IStateNode* FromStateNode, IStateNode* ToSta
 	if (FromStateNode == nullptr)
 		return false;
 
-	AbsoluteOutcomeCode FromOutcome = MakeCode(*FromStateNode, WhenOutcome);
+	OutcomeEdgeCode FromOutcome = MakeCode(*FromStateNode, WhenOutcome);
 
 	// emplace returns a pair (iterator:dest, bool:inserted)
 	auto res = NextStateNode.emplace(FromOutcome, ToStateNode);
@@ -82,7 +82,7 @@ IStateNode* StateTracker::Advance(IStateNode* FromStateNode, OutcomeId OnOutcome
 	if (FromStateNode==nullptr)
 		return nullptr;
 
-	AbsoluteOutcomeCode FromOutcome = MakeCode(*FromStateNode, OnOutcome);
+	OutcomeEdgeCode FromOutcome = MakeCode(*FromStateNode, OnOutcome);
 	auto it = NextStateNode.find(FromOutcome);
 
 	return it != NextStateNode.end() ? it->second : nullptr;
