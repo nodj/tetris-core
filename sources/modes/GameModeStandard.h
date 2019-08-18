@@ -54,6 +54,9 @@ public:
 	virtual i32 GetLogicTickRate() override;
 	virtual bool Tick(i32 LogicTick) override;
 
+public:
+	const LevelManager& GetLevelManager() const { return Level; }
+
 private:
 	class StandardGameMode* Mode = nullptr;
 	u32 GravityTickBudget;
@@ -91,6 +94,14 @@ public:
 	virtual void InternalTick(i32 ms) override;
 
 	const Board& GetBoard() const { return board; }
+
+public:
+	// Check if currently in game, with meaningful stats.
+	bool IsInPlayMode() const;
+
+	// API for stats during play mode. UB if IsInPlayMode returns false
+	u32 GetLineCount() const { return PlayState.GetLevelManager().GetClearedLineCount(); }
+	u32 GetLevel() const { return PlayState.GetLevelManager().GetCurrentLevel(); }
 
 private:
 	Board board;

@@ -16,11 +16,11 @@ public:
 	TetrisHost();
 
 	// setup a new game mode
-	class StandardGameMode& SetupStandardMode(i32 Width=10, i32 Height=22);
-	GameMode& GetCurrentMode() { return *game; }
+	std::shared_ptr<class StandardGameMode> SetupStandardMode(i32 Width=10, i32 Height=22);
+	std::shared_ptr<GameMode> GetCurrentMode() { return game; }
 
 private:
-	std::unique_ptr<GameMode> game;
+	std::shared_ptr<GameMode> game;
 };
 
 } // ns tc

@@ -28,6 +28,12 @@ void StandardGameMode::InternalTick(i32 ms)
 		SetOver();
 }
 
+bool StandardGameMode::IsInPlayMode() const
+{
+	return Tracker.GetCurrentStateNodeId() == SubState::Play
+		|| Tracker.GetCurrentStateNodeId() == SubState::Wait;
+}
+
 void WaitStateNode::Enter()
 {
 	// config capabilities

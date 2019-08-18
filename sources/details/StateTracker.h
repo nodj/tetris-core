@@ -65,6 +65,8 @@ public:
 	bool Tick(i32 ms);
 	bool IsTickable() const { return CurrentStateNode != nullptr; }
 
+	StateNodeId GetCurrentStateNodeId() const { return CurrentStateNode ? CurrentStateNode->Id() : -1;}
+
 private:
 	using OutcomeEdgeCode = u64;
 

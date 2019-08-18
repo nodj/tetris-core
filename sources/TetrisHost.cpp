@@ -11,10 +11,11 @@ TetrisHost::TetrisHost()
 {
 }
 
-StandardGameMode& TetrisHost::SetupStandardMode(i32 Width, i32 Height)
+std::shared_ptr<StandardGameMode> TetrisHost::SetupStandardMode(i32 Width, i32 Height)
 {
-	game = std::make_unique<StandardGameMode>(Width, Height);
-	return *(StandardGameMode*)game.get();
+	auto tmp = std::make_shared<StandardGameMode>(Width, Height);
+	game = tmp;
+	return tmp;
 }
 
 } // ns tc

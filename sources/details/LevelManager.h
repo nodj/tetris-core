@@ -29,9 +29,9 @@ public:
 	// Declare an additional score of 1,2,3 or 4 lines
 	void RegisterClearedLines(u32 LineCount);
 
-	u32 GetCurrentLevel() { return CurrentLevel; }
-
-	u32 GetCurrentFallSpeed();
+	u32 GetCurrentLevel() const { return CurrentLevel; }
+	u32 GetCurrentFallSpeed() const;
+	u32 GetClearedLineCount() const { return ClearedLineCount; }
 
 private:
 	void SetCurrentLevel(u32 Level);

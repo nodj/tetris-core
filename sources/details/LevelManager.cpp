@@ -45,11 +45,11 @@ void LevelManager::RegisterClearedLines(u32 LineCount)
 	}
 }
 
-u32 LevelManager::GetCurrentFallSpeed()
+u32 LevelManager::GetCurrentFallSpeed() const
 {
 	// in ms per cell, TDG.7
 	static std::array<u32, 15> DefaultFallSpeed = {1000, 793, 618, 473, 355, 262, 190, 135, 94, 64, 43, 28, 18, 11, 7};
-	return DefaultFallSpeed[ Clamp<u32>(CurrentLevel, 0, 14)];
+	return DefaultFallSpeed[Clamp<u32>(CurrentLevel, 0, 14)];
 }
 
 void LevelManager::SetCurrentLevel(u32 Level)
