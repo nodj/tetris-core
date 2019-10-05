@@ -264,6 +264,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		bool bHardDrop = Mode->Inputs.IsHardDropInvoked();
 		if (bHardDrop)
 		{
+			Level.RegisterDrop(MovingBlockY - HardDroppedY, true);
 			MovingBlockY = HardDroppedY;
 			bMustLockDown = true;
 		}
@@ -286,6 +287,8 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				i32 TestY = MovingBlockY - GravityDisplacement;
 				if (board.Blit(CurrentSpan, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 				{
+					if (bSoftDrop)
+						Level.RegisterDrop(MovingBlockY - TestY, false);
 					MovingBlockY = TestY;
 				}
 				else

@@ -18,8 +18,8 @@ bool Board::IsLineComplete(i32 y) const
 		return false;
 
 	return std::all_of(
-		StaticBlocks.begin()+LinearCoord(0, y),
-		StaticBlocks.begin()+LinearCoord(0, y+1),
+		StaticBlocks.begin() + LinearOffset(0, y),
+		StaticBlocks.begin() + LinearOffset(0, y + 1),
 		[](const Cell& c){ return c.state; }
 	);
 }
@@ -93,7 +93,7 @@ Cell* Board::AtInternal(i32 x, i32 y, BlockLayer Target)
 	if (y >= Height)
 		return &VirtualNorth;
 	Grid& grid = Target==BlockLayer::Static ? StaticBlocks : MergedBlocks;
-	return &grid[LinearCoord(x, y)];
+	return &grid[LinearOffset(x, y)];
 }
 
 void Board::DeleteLines(std::vector<i32> CompletedLines)
@@ -107,8 +107,8 @@ void Board::DeleteLines(std::vector<i32> CompletedLines)
 	for (i32 y : CompletedLines)
 	{
 		std::rotate(
-			std::begin(StaticBlocks)+LinearCoord(0, y),
-			std::begin(StaticBlocks)+LinearCoord(0, y+1),
+			std::begin(StaticBlocks)+LinearOffset(0, y),
+			std::begin(StaticBlocks)+LinearOffset(0, y+1),
 			std::end(StaticBlocks)
 		);
 	}
@@ -116,7 +116,7 @@ void Board::DeleteLines(std::vector<i32> CompletedLines)
 	// erase top
 	Cell NullCell;
 	std::fill(
-		std::begin(StaticBlocks)+LinearCoord(0, Height - i32(CompletedLines.size())),
+		std::begin(StaticBlocks)+LinearOffset(0, Height - i32(CompletedLines.size())),
 		std::end(StaticBlocks),
 		NullCell
 	);

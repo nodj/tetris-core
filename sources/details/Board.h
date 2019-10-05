@@ -27,7 +27,6 @@ struct Cell
 class Board
 {
 public:
-
     using Grid = std::vector<Cell>;
 
 public:
@@ -53,18 +52,16 @@ public:
 	void ResetToConsolidated();
 	void Consolidate();
 
-
 private:
+	constexpr i32 LinearOffset(i32 x, i32 y) const { return x + y * Width; }
 	Cell* AtInternal(i32 x, i32 y, BlockLayer Target);
-
-	constexpr i32 LinearCoord(i32 x, i32 y) const { return x + y * Width; }
 
 	i32 Width;
 	i32 Height;
     Grid StaticBlocks;
     Grid MergedBlocks;
 
-	// fake cells, used to avoid tons of ifs
+	// Virtual cells, used to avoid tons of ifs
 	Cell VirtualOffBoard;
 	Cell VirtualNorth;
 };

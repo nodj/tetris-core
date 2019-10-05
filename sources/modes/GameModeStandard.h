@@ -100,8 +100,7 @@ public:
 	bool IsInPlayMode() const;
 
 	// API for stats during play mode. UB if IsInPlayMode returns false
-	u32 GetLineCount() const { return PlayState.GetLevelManager().GetClearedLineCount(); }
-	u32 GetLevel() const { return PlayState.GetLevelManager().GetCurrentLevel(); }
+	const BasicGameStats& GetBasicStats() const { return PlayState.GetLevelManager().GetCurrentStats(); }
 
 private:
 	Board board;

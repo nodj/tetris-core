@@ -6,13 +6,9 @@
 namespace tc
 {
 
-LevelManager::LevelManager(LevelUpPolicy Mode/*=Fixed*/, u32 StartLevel/*=0*/) : Mode(Mode)
+LevelManager::LevelManager(LevelUpPolicy Mode, u32 StartLevel) : Mode(Mode)
 	, StartLevel(StartLevel)
-	, CurrentLevel(0)
-	, ClearedLineCount(0)
-// 	, GiftedLineCount(0)
-	, Score(0)
-	, Capped(false)
+	, MaxedOut(false)
 {
 	Reset();
 }
@@ -20,42 +16,49 @@ LevelManager::LevelManager(LevelUpPolicy Mode/*=Fixed*/, u32 StartLevel/*=0*/) :
 void LevelManager::Reset()
 {
 	SetCurrentLevel(StartLevel);
-	ClearedLineCount = 0;
-	Score = 0;
+	Stats = BasicGameStats();
 }
 
 void LevelManager::RegisterClearedLines(u32 LineCount)
 {
-	ClearedLineCount += LineCount;
+	Stats.Lines += LineCount;
 
-	// compute the new level
-	if (!Capped)
+	// update level (TDG.6)
+	if (!MaxedOut)
 	{
 		switch (Mode)
 		{
-			case VariableWithBonus:
-				while (!Capped && ClearedLineCount / 5 >= (CurrentLevel+1) * (CurrentLevel+2) / 2)
-					SetCurrentLevel(CurrentLevel + 1);
+			case LevelUpPolicy::VariableWithBonus:
+				while (!MaxedOut && Stats.Lines / 5 >= (Stats.Level+1) * (Stats.Level+2) / 2)
+					SetCurrentLevel(Stats.Level + 1);
 				break;
 
-			case Fixed:
-				SetCurrentLevel(ClearedLineCount / 10);
+			case LevelUpPolicy::Fixed:
+				SetCurrentLevel(Stats.Lines / 10);
 				break;
 		}
 	}
+
+	// Score (TDG.8)
+	i32 m[] = {0, 1, 3, 5, 8};
+	Stats.Score += 100 * m[Clamp<u32>(LineCount, 0, 4)] * (Stats.Level + 1);
 }
 
-u32 LevelManager::GetCurrentFallSpeed() const
+void LevelManager::RegisterDrop(u32 DroppedCellCount, bool bHard)
 {
-	// in ms per cell, TDG.7
-	static std::array<u32, 15> DefaultFallSpeed = {1000, 793, 618, 473, 355, 262, 190, 135, 94, 64, 43, 28, 18, 11, 7};
-	return DefaultFallSpeed[Clamp<u32>(CurrentLevel, 0, 14)];
+	Stats.Score += DroppedCellCount * (bHard ? 2 : 1);
 }
 
 void LevelManager::SetCurrentLevel(u32 Level)
 {
-	CurrentLevel = Clamp<u32>(Level, 0, 14);
-	Capped = Level == 14;
+	static std::array<u32, 15> Delays = {1000, 793, 618, 473, 355, 262, 190, 135, 94, 64, 43, 28, 18, 11, 7};
+
+	u32 MaxLevel = Delays.size();
+	Stats.Level = Clamp<u32>(Level, 0, MaxLevel);
+	MaxedOut = Level == 14;
+
+	// Update fall speed (in ms per cell) TDG.7
+	FallSpeedDelay_ms = Delays[Stats.Level];
 }
 
 } // ns tc
