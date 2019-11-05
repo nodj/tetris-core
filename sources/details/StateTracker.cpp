@@ -51,7 +51,7 @@ bool StateTracker::Tick(i32 ms)
 	switch(subState)
 	{
 		case ESS_Enter:
-			s.Enter();
+			s.Enter(PreviousStateNode);
 			subState <<= 1;
 			break;
 		case ESS_FadeIn:
@@ -68,8 +68,9 @@ bool StateTracker::Tick(i32 ms)
 			break;
 		case ESS_Exit:
 			// advance in the state chain
-			u8 OutcomeValue = s.Exit();
-			CurrentStateNode = Advance(CurrentStateNode, OutcomeValue);
+			OutcomeId OutcomeValue = s.Exit();
+			PreviousStateNode = CurrentStateNode;
+			CurrentStateNode = Advance(PreviousStateNode, OutcomeValue);
 			subState = ESS_Enter;
 			break;
 	}

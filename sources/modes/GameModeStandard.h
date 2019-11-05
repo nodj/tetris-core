@@ -22,6 +22,7 @@ enum SubState
 	Setup, // init
 	Wait, // menu loop
 	Play, // std loop
+	Pause, // blank screen
 	End, // death anim
 	_count,
 };
@@ -30,15 +31,16 @@ enum SubState
 class WaitStateNode : public IStateNode
 {
 public:
-	WaitStateNode(class StandardGameMode* Mode) : Mode(Mode) {}
-	virtual u32 Id() const override { return SubState::Wait; }
-	virtual void Enter() override;
+	WaitStateNode(Board& ModeBoard, InputTracker& ModeInputs);
+	virtual StateNodeId Id() const override { return SubState::Wait; }
+	virtual void Enter(IStateNode* PreviousNode) override;
 	virtual i32 GetLogicTickRate() override;
 	virtual bool Tick(i32 LogicTick) override;
 	virtual bool TickFadeOut(i32 LogicTick) override;
 
 private:
-	class StandardGameMode* Mode;
+	Board& MainBoard;
+	InputTracker& Inputs;
 
 	i32 CurrentFlashLine;
 	i32 CleanupColumn;
@@ -48,17 +50,22 @@ private:
 class PlayStateNode : public IStateNode
 {
 public:
-	PlayStateNode(class StandardGameMode* Mode);
-	virtual u32 Id() const override { return SubState::Play; }
-	virtual void Enter() override;
+	PlayStateNode(Board& ModeBoard, InputTracker& ModeInputs);
+	virtual StateNodeId Id() const override { return SubState::Play; }
+	virtual void Enter(IStateNode* PreviousNode) override;
 	virtual i32 GetLogicTickRate() override;
 	virtual bool Tick(i32 LogicTick) override;
+
+
+	virtual OutcomeId Exit() override;
 
 public:
 	const LevelManager& GetLevelManager() const { return Level; }
 
 private:
-	class StandardGameMode* Mode = nullptr;
+	Board& MainBoard;
+	InputTracker& Inputs;
+
 	u32 GravityTickBudget;
 
 	u32 AutoRepeatDelay;
@@ -81,19 +88,39 @@ private:
 	u32 CompleteLineAnimBudget = 0;
 	PieceGenerator<> RPG;
 	LevelManager Level;
+
+	Board BackupState;
+	OutcomeId CurrentOutcomeId;
 };
 
+class PauseStateNode : public IStateNode
+{
+public:
+	PauseStateNode(Board& ModeBoard, InputTracker& ModeInputs);
+	virtual StateNodeId Id() const override { return SubState::Pause; }
+
+	virtual void Enter(IStateNode* PreviousNode) override;
+	virtual i32 GetLogicTickRate() override { return 10; }
+	virtual bool Tick(i32 LogicTick) override;
+
+private:
+	Board& MainBoard;
+	InputTracker& Inputs;
+};
 
 class StandardGameMode : public GameMode
 {
 public:
+	static constexpr OutcomeId WhenEnded = 0;
+	static constexpr OutcomeId WhenPaused = 1;
+
 	StandardGameMode(i32 Width=10, i32 Height=22);
 
 	virtual void RegisterInput(EGameplayInput Input) override;
 
 	virtual void InternalTick(i32 ms) override;
 
-	const Board& GetBoard() const { return board; }
+	const Board& GetBoard() const { return SharedBoard; }
 
 public:
 	// Check if currently in game, with meaningful stats.
@@ -103,17 +130,14 @@ public:
 	const BasicGameStats& GetBasicStats() const { return PlayState.GetLevelManager().GetCurrentStats(); }
 
 private:
-	Board board;
-
+	Board SharedBoard;
 	InputTracker Inputs;
 
 	StateTracker Tracker;
 
 	WaitStateNode WaitState;
-	friend WaitStateNode;
-
 	PlayStateNode PlayState;
-	friend PlayStateNode;
+	PauseStateNode PauseState;
 };
 
 } // ns tc

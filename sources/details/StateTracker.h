@@ -10,6 +10,9 @@
 namespace tc
 {
 
+using StateNodeId = u32;
+using OutcomeId = u32;
+
 struct IStateNode
 {
 	IStateNode()
@@ -21,12 +24,14 @@ struct IStateNode
 	virtual ~IStateNode() = default;
 
 	// return the identifier of this state
-	virtual u32 Id() const = 0;
+	virtual StateNodeId Id() const = 0;
 
 	// called once on state init
-	virtual void Enter() {}
+	virtual void Enter(IStateNode* PreviousNode) {}
 
-	// called pre Tick* calls
+	// called before each Tick* calls
+	// unit: milliseconds per logic tick
+	// ex: in order to have 20 ticks per second, an implementation should return 50.
 	virtual i32 GetLogicTickRate() = 0;
 
 	// loop before standard loop
@@ -44,7 +49,7 @@ struct IStateNode
 	// called once on state exit
 	// return an outcome value usable to orient to the next state
 	// ex: a state could have a Win or Lose outcome value, with a map of following state
-	virtual u8 Exit() { return 0; }
+	virtual OutcomeId Exit() { return 0; }
 
 	u8 bCanFadeIn : 1;
 	u8 bCanTick : 1;
@@ -55,7 +60,6 @@ class StateTracker
 {
 public:
 	using StateNodeId = u32;
-	using OutcomeId = u32;
 
 	// return true when insertion succeed
 	bool SetNextStateNode(IStateNode* FromStateNode, IStateNode* ToStateNode, OutcomeId WhenOutcome=0);
@@ -87,6 +91,7 @@ private:
 	// machine description
 	std::map<OutcomeEdgeCode, IStateNode*> NextStateNode;
 
+	IStateNode* PreviousStateNode = nullptr;
 	IStateNode* CurrentStateNode = nullptr;
 	ESubState subState = ESS_Enter;
 

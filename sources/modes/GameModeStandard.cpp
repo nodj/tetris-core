@@ -5,12 +5,17 @@ namespace tc
 {
 
 StandardGameMode::StandardGameMode(i32 Width, i32 Height)
-	: board(Width, Height)
-	, WaitState(this)
-	, PlayState(this)
+	: SharedBoard(Width, Height)
+	, WaitState(SharedBoard, Inputs)
+	, PlayState(SharedBoard, Inputs)
+	, PauseState(SharedBoard, Inputs)
 {
 	Tracker.SetNextStateNode(&WaitState, &PlayState);
-	Tracker.SetNextStateNode(&PlayState, &WaitState);
+	Tracker.SetNextStateNode(&PlayState, &WaitState, WhenEnded);
+
+	Tracker.SetNextStateNode(&PlayState, &PauseState, WhenPaused);
+	Tracker.SetNextStateNode(&PauseState, &PlayState);
+
 	Tracker.SetStartState(&WaitState);
 }
 
@@ -19,9 +24,9 @@ void StandardGameMode::RegisterInput(EGameplayInput Input)
 	Inputs.RegisterInput(Input);
 }
 
-void StandardGameMode::InternalTick(i32 ms)
+void StandardGameMode::InternalTick(i32 Ms)
 {
-	if (Tracker.Tick(ms))
+	if (Tracker.Tick(Ms))
 		Inputs.EndFrame();
 
 	if (!Tracker.IsTickable())
@@ -34,7 +39,13 @@ bool StandardGameMode::IsInPlayMode() const
 		|| Tracker.GetCurrentStateNodeId() == SubState::Wait;
 }
 
-void WaitStateNode::Enter()
+WaitStateNode::WaitStateNode(Board& ModeBoard, InputTracker& ModeInputs)
+	: MainBoard(ModeBoard)
+	, Inputs(ModeInputs)
+{
+}
+
+void WaitStateNode::Enter(IStateNode* PreviousNode)
 {
 	// config capabilities
 	bCanFadeIn = false;
@@ -44,7 +55,7 @@ void WaitStateNode::Enter()
 	// init internal state
 	CurrentFlashLine = 0;
 	CleanupColumn = 0;
-	Mode->board.Clear();
+	MainBoard.Clear();
 }
 
 i32 WaitStateNode::GetLogicTickRate()
@@ -54,23 +65,21 @@ i32 WaitStateNode::GetLogicTickRate()
 
 bool WaitStateNode::Tick(i32 LogicTick)
 {
-	Board& board = Mode->board;
-
 	// advance logic
 	CurrentFlashLine += LogicTick;
-	CurrentFlashLine %= board.GetHeight();
+	CurrentFlashLine %= MainBoard.GetHeight();
 
 	// draw on board
-	board.ResetToConsolidated();
+	MainBoard.ResetToConsolidated();
 
-	i32 w = board.GetWidth();
+	i32 w = MainBoard.GetWidth();
 	for (i32 x = 0; x < w; ++x)
 	{
-		board.At(x, CurrentFlashLine).state = true;
+		MainBoard.At(x, CurrentFlashLine).state = true;
 	}
 
 	// exit condition check
-	if (Mode->Inputs.IsStartInvoked())
+	if (Inputs.IsStartInvoked())
 	{
 		return false; // goto fadeout anim loop
 	}
@@ -79,55 +88,65 @@ bool WaitStateNode::Tick(i32 LogicTick)
 
 bool WaitStateNode::TickFadeOut(i32 LogicTick)
 {
-	Board& board = Mode->board;
-
 	// advance logic
 	i32 TargetColCount = CleanupColumn + LogicTick;
 	for (; CleanupColumn < TargetColCount; ++CleanupColumn)
 	{
-		if (CleanupColumn > board.GetWidth())
+		if (CleanupColumn > MainBoard.GetWidth())
 		{
 			return false;
 		}
 
-		i32 h = board.GetHeight();
+		i32 h = MainBoard.GetHeight();
 		for (i32 y = 0; y < h; ++y)
 		{
-			board.At(CleanupColumn, y).state = false;
+			MainBoard.At(CleanupColumn, y).state = false;
 		}
 	}
 	return true;
 }
 
-PlayStateNode::PlayStateNode(class StandardGameMode* Mode)
-	: Mode(Mode)
+PlayStateNode::PlayStateNode(Board& ModeBoard, InputTracker& ModeInputs)
+	: MainBoard(ModeBoard)
+	, Inputs(ModeInputs)
 	, AutoRepeatDelay(170) // TDG.5.2: Approx 0.3s
 	, AutoRepeatSpeed(50)
 	, Level(LevelUpPolicy::VariableWithBonus)
+	, BackupState(0, 0)
 {
 }
 
-void PlayStateNode::Enter()
+void PlayStateNode::Enter(IStateNode* PreviousNode)
 {
+	CurrentOutcomeId = StandardGameMode::WhenEnded;
 	bCanFadeIn = false;
 	bCanTick = true;
 	bCanFadeOut = false;
 
 	GravityTickBudget = 0;
-
-	MovingBlockNature = Piece_None;
-	MovingBlockOrient = Orient_N;
-	MovingBlockX = 0;
-	MovingBlockY = 0;
-
-	RPG.Reset();
-	Level.Reset();
-	CompletedLines.clear();
-	CompletedLines.reserve(4);
 	CompleteLineAnimBudget = 0;
 
-	Board& board = Mode->board;
-	board.Clear();
+	bool bWasInPause = (PreviousNode && PreviousNode->Id() == SubState::Pause);
+	if (bWasInPause)
+	{
+		// restore the backup
+		MainBoard = BackupState;
+		BackupState = Board(0, 0);
+	}
+	else
+	{
+		MovingBlockNature = Piece_None;
+		MovingBlockOrient = Orient_N;
+		MovingBlockX = 0;
+		MovingBlockY = 0;
+
+		RPG.Reset();
+		Level.Reset();
+		CompletedLines.clear();
+		CompletedLines.reserve(4);
+
+		MainBoard.Clear();
+	}
 }
 
 i32 PlayStateNode::GetLogicTickRate()
@@ -138,8 +157,6 @@ i32 PlayStateNode::GetLogicTickRate()
 bool PlayStateNode::Tick(i32 LogicTick)
 {
 	GravityTickBudget += LogicTick;
-
-	Board& board = Mode->board;
 
 	// get moving part
 	i32 PreviousX = MovingBlockX;
@@ -154,14 +171,17 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			// Spawn a new piece !
 			MovingBlockNature = RPG.pop();
 			MovingBlockOrient = Orient_N;
-			MovingBlockX = (board.GetWidth()-3)/2;
-			MovingBlockY = board.GetHeight();
+			MovingBlockX = (MainBoard.GetWidth()-3)/2;
+			MovingBlockY = MainBoard.GetHeight();
 
 			// Validate that we spawn on an available area
 			const Span& newSpan = GetSpan(MovingBlockNature, MovingBlockOrient);
-			bool bSpawnSucceed = board.Blit(newSpan, MovingBlockX, MovingBlockY, Cell{}, Board::BlockLayer::Static, Board::BlockLayer::None);
+			bool bSpawnSucceed = MainBoard.Blit(newSpan, MovingBlockX, MovingBlockY, Cell{}, Board::BlockLayer::Static, Board::BlockLayer::None);
 			if (!bSpawnSucceed)
+			{
+				CurrentOutcomeId = StandardGameMode::WhenEnded;
 				return false;
+			}
 		}
 		else
 		{
@@ -173,12 +193,12 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				u32 WaveSide = 150;
 				bool bIsOn = (CompleteLineAnimBudget / WaveSide) & 1;
 				for (i32 y : CompletedLines)
-					for (i32 x = 0; x < board.GetWidth(); ++x)
-						board.At(x, y).state = bIsOn;
+					for (i32 x = 0; x < MainBoard.GetWidth(); ++x)
+						MainBoard.At(x, y).state = bIsOn;
 			}
 			else
 			{
-				board.DeleteLines(CompletedLines);
+				MainBoard.DeleteLines(CompletedLines);
 				CompletedLines.clear();
 			}
 			return true;
@@ -194,7 +214,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 	if (MovingBlockNature != EPiece::Piece_None)
 	{
 		// Consume move inputs
-		if (i32 HzDirection = Mode->Inputs.GetHorizontalDirection())
+		if (i32 HzDirection = Inputs.GetHorizontalDirection())
 		{
 			// reset state if we change direction
 			if (hzit.LastDirection != HzDirection)
@@ -205,7 +225,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 
 			hzit.MoveTickBudget += LogicTick;
 
-			while(true)
+			while (true)
 			{
 				u32 TickThreshold = hzit.RepeatCount == 0 ? 0 : hzit.RepeatCount == 1 ? AutoRepeatDelay : AutoRepeatSpeed;
 				if (hzit.MoveTickBudget > TickThreshold)
@@ -213,7 +233,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 					hzit.MoveTickBudget -= TickThreshold;
 					hzit.RepeatCount++;
 
-					if (board.Blit(CurrentSpan, MovingBlockX + HzDirection, MovingBlockY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+					if (MainBoard.Blit(CurrentSpan, MovingBlockX + HzDirection, MovingBlockY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 					{
 						MovingBlockX += HzDirection;
 					}
@@ -230,7 +250,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		}
 
 		// Consume Rotation
-		if (i32 Rotation = Mode->Inputs.GetRotation())
+		if (i32 Rotation = Inputs.GetRotation())
 		{
 			EOrient TestOrient = EOrient((MovingBlockOrient + Rotation + 4) % 4);
 			Span TestSpan = GetSpan(MovingBlockNature, TestOrient);
@@ -242,7 +262,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			{
 				i32 TestX = MovingBlockX+offset[0];
 				i32 TestY = MovingBlockY+offset[1];
-				if (board.Blit(TestSpan, TestX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+				if (MainBoard.Blit(TestSpan, TestX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 				{
 					MovingBlockOrient = TestOrient;
 					MovingBlockX = TestX;
@@ -255,13 +275,13 @@ bool PlayStateNode::Tick(i32 LogicTick)
 
 		// Compute phantom
 		i32 HardDroppedY = MovingBlockY;
-		while (board.Blit(CurrentSpan, MovingBlockX, HardDroppedY-1, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+		while (MainBoard.Blit(CurrentSpan, MovingBlockX, HardDroppedY-1, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 		{
 			HardDroppedY--;
 		}
 
 		// Consume gravity
-		bool bHardDrop = Mode->Inputs.IsHardDropInvoked();
+		bool bHardDrop = Inputs.IsHardDropInvoked();
 		if (bHardDrop)
 		{
 			Level.RegisterDrop(MovingBlockY - HardDroppedY, true);
@@ -274,7 +294,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			u32 GravityThreshold = Level.GetCurrentFallSpeed();
 
 			// TDG.5.5: SoftDrop is 20x faster than normal drop
-			bool bSoftDrop = Mode->Inputs.IsSoftDropInvoked();
+			bool bSoftDrop = Inputs.IsSoftDropInvoked();
 			if (bSoftDrop)
 				GravityThreshold /= 20;
 
@@ -285,7 +305,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 					GravityTickBudget = 0;
 				i32 GravityDisplacement = 1;
 				i32 TestY = MovingBlockY - GravityDisplacement;
-				if (board.Blit(CurrentSpan, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
+				if (MainBoard.Blit(CurrentSpan, MovingBlockX, TestY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 				{
 					if (bSoftDrop)
 						Level.RegisterDrop(MovingBlockY - TestY, false);
@@ -304,8 +324,8 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		{
 			// #tc_todo TDG.5.7: Extended/Infinite/Classic LockDown
 			Value.locked = true;
-			board.Blit(CurrentSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
-			board.ResetToConsolidated();
+			MainBoard.Blit(CurrentSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
+			MainBoard.ResetToConsolidated();
 
 			// clear MovingBlock state (to spawn a new one in the next frame)
 			MovingBlockNature = EPiece::Piece_None;
@@ -314,9 +334,9 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			GravityTickBudget = 0;
 
 			// complete lines
-			for (i32 y = 0; y < board.GetHeight(); ++y)
+			for (i32 y = 0; y < MainBoard.GetHeight(); ++y)
 			{
-				if (board.IsLineComplete(y))
+				if (MainBoard.IsLineComplete(y))
 				{
 					CompletedLines.push_back(y);
 				}
@@ -335,15 +355,53 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			// update board if state changed
 			if (PreviousX != MovingBlockX || PreviousY != MovingBlockY || PreviousO != MovingBlockOrient)
 			{
-				board.ResetToConsolidated();
-				board.Blit(CurrentSpan, MovingBlockX, HardDroppedY, Value.AsPhantom(), Board::BlockLayer::None, Board::BlockLayer::Merged);
-				board.Blit(CurrentSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Merged);
+				MainBoard.ResetToConsolidated();
+				MainBoard.Blit(CurrentSpan, MovingBlockX, HardDroppedY, Value.AsPhantom(), Board::BlockLayer::None, Board::BlockLayer::Merged);
+				MainBoard.Blit(CurrentSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Merged);
 			}
 		}
 	}
 
-	return !Mode->Inputs.IsSelectInvoked();
+	bool bContinue = true;
+	if (Inputs.IsSelectInvoked())
+	{
+		CurrentOutcomeId = StandardGameMode::WhenEnded;
+		bContinue = false;
+	}
+
+	if (Inputs.IsStartInvoked())
+	{
+		CurrentOutcomeId = StandardGameMode::WhenPaused;
+		BackupState = MainBoard;
+		bContinue = false;
+	}
+
+	return bContinue;
 }
 
+
+OutcomeId PlayStateNode::Exit()
+{
+	return CurrentOutcomeId;
+}
+
+PauseStateNode::PauseStateNode(Board& ModeBoard, InputTracker& ModeInputs)
+	: MainBoard(ModeBoard)
+	, Inputs(ModeInputs)
+{
+	bCanTick = true;
+}
+
+void PauseStateNode::Enter(IStateNode* /*PreviousNode*/)
+{
+	MainBoard.Clear();
+}
+
+bool PauseStateNode::Tick(i32 LogicTick)
+{
+	bool bContinue = !Inputs.IsStartInvoked();
+
+	return bContinue;
+}
 
 } // ns tc
