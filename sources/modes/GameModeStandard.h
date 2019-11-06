@@ -66,10 +66,10 @@ private:
 	Board& MainBoard;
 	InputTracker& Inputs;
 
-	u32 GravityTickBudget;
+	u32 GravityTickBudget = 0;
 
-	u32 AutoRepeatDelay;
-	u32 AutoRepeatSpeed;
+	u32 AutoRepeatDelay = 170; // TDG.5.2: Approx 0.3s
+	u32 AutoRepeatSpeed = 50;
 
 	struct HorizontalInputTracker
 	{

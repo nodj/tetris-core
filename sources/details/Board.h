@@ -20,7 +20,7 @@ struct Cell
 	Cell AsPhantom() { Cell Phantom; Phantom.nature = nature; Phantom.phantom = true; return Phantom; }
 };
 
-/*
+/**
  * Coordinates start from the bottom left cell, at (0,0).
  * -> Highest addressable cell: (W-1, H-1)
  */

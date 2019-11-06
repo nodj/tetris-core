@@ -109,8 +109,6 @@ bool WaitStateNode::TickFadeOut(i32 LogicTick)
 PlayStateNode::PlayStateNode(Board& ModeBoard, InputTracker& ModeInputs)
 	: MainBoard(ModeBoard)
 	, Inputs(ModeInputs)
-	, AutoRepeatDelay(170) // TDG.5.2: Approx 0.3s
-	, AutoRepeatSpeed(50)
 	, Level(LevelUpPolicy::VariableWithBonus)
 	, BackupState(0, 0)
 {
@@ -123,18 +121,13 @@ void PlayStateNode::Enter(IStateNode* PreviousNode)
 	bCanTick = true;
 	bCanFadeOut = false;
 
-	GravityTickBudget = 0;
-	CompleteLineAnimBudget = 0;
-
 	bool bWasInPause = (PreviousNode && PreviousNode->Id() == SubState::Pause);
-	if (bWasInPause)
+
+	if (!bWasInPause)
 	{
-		// restore the backup
-		MainBoard = BackupState;
-		BackupState = Board(0, 0);
-	}
-	else
-	{
+		// init the game
+		GravityTickBudget = 0;
+		CompleteLineAnimBudget = 0;
 		MovingBlockNature = Piece_None;
 		MovingBlockOrient = Orient_N;
 		MovingBlockX = 0;
@@ -146,6 +139,12 @@ void PlayStateNode::Enter(IStateNode* PreviousNode)
 		CompletedLines.reserve(4);
 
 		MainBoard.Clear();
+	}
+	else
+	{
+		// restore the backup
+		MainBoard = BackupState;
+		BackupState = Board(0, 0);
 	}
 }
 
@@ -381,7 +380,6 @@ bool PlayStateNode::Tick(i32 LogicTick)
 
 	return TickEnding();
 }
-
 
 OutcomeId PlayStateNode::Exit()
 {
