@@ -156,6 +156,23 @@ i32 PlayStateNode::GetLogicTickRate()
 
 bool PlayStateNode::Tick(i32 LogicTick)
 {
+	auto TickEnding = [&]()
+	{
+		if (Inputs.IsSelectInvoked())
+		{
+			CurrentOutcomeId = StandardGameMode::WhenEnded;
+			return false;
+		}
+
+		if (Inputs.IsStartInvoked())
+		{
+			CurrentOutcomeId = StandardGameMode::WhenPaused;
+			BackupState = MainBoard;
+			return false;
+		}
+		return true;
+	};
+
 	GravityTickBudget += LogicTick;
 
 	// get moving part
@@ -201,7 +218,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				MainBoard.DeleteLines(CompletedLines);
 				CompletedLines.clear();
 			}
-			return true;
+			return TickEnding();
 		}
 	}
 
@@ -362,21 +379,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		}
 	}
 
-	bool bContinue = true;
-	if (Inputs.IsSelectInvoked())
-	{
-		CurrentOutcomeId = StandardGameMode::WhenEnded;
-		bContinue = false;
-	}
-
-	if (Inputs.IsStartInvoked())
-	{
-		CurrentOutcomeId = StandardGameMode::WhenPaused;
-		BackupState = MainBoard;
-		bContinue = false;
-	}
-
-	return bContinue;
+	return TickEnding();
 }
 
 
