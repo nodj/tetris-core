@@ -46,6 +46,7 @@ public:
 	bool Blit(const Span& span, i32 xOrigin, i32 yOrigin, Cell Value, BlockLayer TestLayer, BlockLayer BlitLayer);
 
 	void Clear();
+	void FillLine(i32 y, Cell Value);
 	void Fill(Cell Value);
 	void DeleteLines(std::vector<i32> CompletedLines);
 

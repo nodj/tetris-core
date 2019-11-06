@@ -69,6 +69,12 @@ void Board::Clear()
 	Consolidate();
 }
 
+void Board::FillLine(i32 y, Cell Value)
+{
+	if (y >= 0 && y < Height)
+		std::fill(std::begin(MergedBlocks) + y * Width, std::begin(MergedBlocks) + (y+1) * Width, Value);
+}
+
 void Board::Fill(Cell Value)
 {
 	std::fill(std::begin(MergedBlocks), std::end(MergedBlocks), Value);
@@ -123,5 +129,6 @@ void Board::DeleteLines(std::vector<i32> CompletedLines)
 
 	ResetToConsolidated();
 }
+
 
 } // ns tc
