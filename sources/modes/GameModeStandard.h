@@ -100,12 +100,13 @@ public:
 	virtual StateNodeId Id() const override { return SubState::Pause; }
 
 	virtual void Enter(IStateNode* PreviousNode) override;
-	virtual i32 GetLogicTickRate() override { return 10; }
+	virtual i32 GetLogicTickRate() override;
 	virtual bool Tick(i32 LogicTick) override;
 
 private:
 	Board& MainBoard;
 	InputTracker& Inputs;
+	i32 MsgOffsetX;
 };
 
 class StandardGameMode : public GameMode
