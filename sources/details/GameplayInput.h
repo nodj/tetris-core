@@ -18,6 +18,7 @@ enum EGameplayInput
 	MoveDownReleased,
 
 	HardDrop,
+	Hold,
 };
 
 } // ns tc

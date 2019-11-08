@@ -31,6 +31,9 @@ void InputTracker::RegisterInput(EGameplayInput Input)
 		case EGameplayInput::HardDrop:
 			actionHardDrop = true;
 			break;
+		case EGameplayInput::Hold:
+			actionHold = true;
+			break;
 		case EGameplayInput::RotateLeft:
 			actionRotateLeft = true;
 			break;
@@ -67,6 +70,7 @@ void InputTracker::EndFrame()
 	actionStart = false;
 	actionSelect = false;
 	actionHardDrop = false;
+	actionHold = false;
 }
 
 } // ns tc

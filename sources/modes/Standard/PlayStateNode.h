@@ -19,8 +19,6 @@ public:
 	static constexpr OutcomeId WhenEnded = 0;
 	static constexpr OutcomeId WhenPaused = 1;
 
-
-
 public:
 	PlayStateNode(Board& ModeBoard, InputTracker& ModeInputs);
 	virtual StateNodeId Id() const override { return NodeIds::Play; }
@@ -28,7 +26,7 @@ public:
 	virtual i32 GetLogicTickRate() override;
 	virtual bool Tick(i32 LogicTick) override;
 	virtual bool TickFadeOut(i32 LogicTick) override;
-	virtual OutcomeId Exit() override;
+	virtual OutcomeId Exit() override { return CurrentOutcomeId; }
 
 public:
 	const LevelManager& GetLevelManager() const { return Level; }
@@ -55,6 +53,9 @@ private:
 	i32 MovingBlockX = 0;
 	i32 MovingBlockY = 0;
 
+	EPiece HoldBlockNature = Piece_None;
+	bool bCanHold = true;
+
 	std::vector<i32> CompletedLines;
 	u32 CompleteLineAnimBudget = 0;
 	PieceGenerator<> RPG;
@@ -65,7 +66,8 @@ private:
 
 	// Death anim
 	i32 DeathAnimTime = 0;
-	i32 LastY = 0;
+	i32 DeathAnimLastY = 0;
+	bool DeathAnimHasTopped = false;
 };
 
 } // ns tc
