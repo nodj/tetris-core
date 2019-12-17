@@ -335,6 +335,7 @@ bool PlayStateNode::TickFadeOut(i32 LogicTick)
 	{
 		DeathAnimHasTopped = true;
 		DeathAnimLastY = 0;
+		return true;
 	}
 	return CurrentY < H;
 }
