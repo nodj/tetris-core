@@ -38,9 +38,22 @@ const Span& GetSpan(EPiece p, EOrient o);
 
 struct FourPixels
 {
-	FourPixels(const Span& span);
-	std::array<u8, 4> x;
-	std::array<u8, 4> y;
+	FourPixels(const Span& span, i32 dx, i32 dy)
+	{
+		i32 pxIndex = 3;
+		for (i32 i = 0; i < 16; ++i)
+		{
+			if (span.pixels & u16(1 << i))
+			{
+				x[pxIndex] = (15 - i) % 4 + dx;
+				y[pxIndex] = dy - (15 - i) / 4;
+				pxIndex--;
+			}
+		}
+	}
+
+	std::array<i32, 4> x;
+	std::array<i32, 4> y;
 };
 
 } // ns tc

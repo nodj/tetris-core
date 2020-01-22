@@ -31,7 +31,7 @@ public:
 
 public:
 	// Describe a block layer
-	enum BlockLayer{None, Static, Merged};
+	enum BlockLayer {None, Static, Merged};
 
 	Board(i32 Width, i32 Height);
 
@@ -50,8 +50,11 @@ public:
 	void Fill(Cell Value);
 	void DeleteLines(std::vector<i32> CompletedLines);
 
-	void ResetToConsolidated();
+	// Set current state as the new reference
 	void Consolidate();
+
+	// reset to last consolidated state
+	void ResetToConsolidated();
 
 private:
 	constexpr i32 LinearOffset(i32 x, i32 y) const { return x + y * Width; }

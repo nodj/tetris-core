@@ -26,27 +26,17 @@ bool Board::IsLineComplete(i32 y) const
 
 bool Board::Blit(const Span& span, i32 xOrigin, i32 yOrigin, Cell Value, BlockLayer TestLayer, BlockLayer BlitLayer)
 {
-	FourPixels fpx(span);
-
-	std::array<i32, 4> xs;
-	std::array<i32, 4> ys;
-
-	for(i32 i = 0; i < 4; ++i)
-	{
-		xs[i] = xOrigin + fpx.x[i];
-		ys[i] = yOrigin - fpx.y[i];
-	}
+	FourPixels fpx(span, xOrigin, yOrigin);
 
 	// Test part
 	if (TestLayer != BlockLayer::None)
 	{
-		std::array<Cell*, 4> testCells;
-		for(i32 i = 0; i < 4; ++i)
+		for (i32 i = 0; i < 4; ++i)
 		{
-			testCells[i] = AtInternal(xs[i], ys[i], TestLayer);
-			if (testCells[i] == &VirtualOffBoard)
+			Cell* testCell = AtInternal(fpx.x[i], fpx.y[i], TestLayer);
+			if (testCell == &VirtualOffBoard)
 				return false;
-			if (testCells[i]->state && testCells[i] != &VirtualNorth)
+			if (testCell->state && testCell != &VirtualNorth)
 				return false;
 		}
 	}
@@ -54,9 +44,9 @@ bool Board::Blit(const Span& span, i32 xOrigin, i32 yOrigin, Cell Value, BlockLa
 	// Blit part
 	if (BlitLayer != BlockLayer::None)
 	{
-		for(i32 i = 0; i < 4; ++i)
+		for (i32 i = 0; i < 4; ++i)
 		{
-			*AtInternal(xs[i], ys[i], BlitLayer) = Value;
+			*AtInternal(fpx.x[i], fpx.y[i], BlitLayer) = Value;
 		}
 	}
 
@@ -80,16 +70,14 @@ void Board::Fill(Cell Value)
 	std::fill(std::begin(MergedBlocks), std::end(MergedBlocks), Value);
 }
 
-void Board::ResetToConsolidated()
-{
-	// reset to last consolidated state
-	MergedBlocks = StaticBlocks;
-}
-
 void Board::Consolidate()
 {
-	// Set current state as the new reference
 	StaticBlocks = MergedBlocks;
+}
+
+void Board::ResetToConsolidated()
+{
+	MergedBlocks = StaticBlocks;
 }
 
 Cell* Board::AtInternal(i32 x, i32 y, BlockLayer Target)
