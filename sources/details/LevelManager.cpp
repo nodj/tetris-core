@@ -19,8 +19,10 @@ void LevelManager::Reset()
 	Stats = BasicGameStats();
 }
 
-void LevelManager::RegisterClearedLines(u32 LineCount)
+void LevelManager::RegisterScore(u32 LineCount, bool bIsTSpin, bool bIsMiniTSpin)
 {
+	if (LineCount == 0 && !bIsMiniTSpin && !bIsTSpin)
+		return;
 	Stats.Lines += LineCount;
 
 	// update level (TDG.6)
@@ -40,8 +42,19 @@ void LevelManager::RegisterClearedLines(u32 LineCount)
 	}
 
 	// Score (TDG.8)
-	i32 m[] = {0, 1, 3, 5, 8};
-	Stats.Score += 100 * m[Clamp<u32>(LineCount, 0, 4)] * (Stats.Level + 1);
+	i32 ThisScore = 0;
+	if (!bIsTSpin)
+	{
+		constexpr std::array<i32, 5> m = {0, 1, 3, 5, 8};
+		ThisScore = m[Clamp<u32>(LineCount, 0, m.size())];
+		ThisScore += bIsMiniTSpin; // mini-TSpin adds 100xlevel
+	}
+	else
+	{
+		constexpr std::array<i32, 4> m = {4, 8, 12, 16};
+		ThisScore = m[Clamp<u32>(LineCount, 0, m.size())];
+	}
+	Stats.Score += ThisScore * 100 * (Stats.Level + 1);
 }
 
 void LevelManager::RegisterDrop(u32 DroppedCellCount, bool bHard)

@@ -35,7 +35,7 @@ public:
 	void Reset();
 
 	// Declare an additional score of 1,2,3 or 4 lines
-	void RegisterClearedLines(u32 LineCount);
+	void RegisterScore(u32 LineCount, bool bIsTSpin, bool bIsMiniTSpin);
 
 	// Declare soft or hard drop for additional points
 	void RegisterDrop(u32 DroppedCellCount, bool bHard);

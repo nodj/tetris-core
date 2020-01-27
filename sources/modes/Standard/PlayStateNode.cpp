@@ -111,6 +111,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			MovingBlockOrient = Orient_N;
 			MovingBlockX = (MainBoard.GetWidth()-3)/2;
 			MovingBlockY = MainBoard.GetHeight();
+			bIsRotationMove = false;
 
 			// Validate that we spawn on an available area
 			const Span& newSpan = GetSpan(MovingBlockNature, MovingBlockOrient);
@@ -178,6 +179,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				if (MainBoard.Blit(CurrentSpan, MovingBlockX + HzDirection, MovingBlockY, Value, Board::BlockLayer::Static, Board::BlockLayer::None))
 				{
 					MovingBlockX += HzDirection;
+					bIsRotationMove = false;
 				}
 			}
 			else
@@ -210,6 +212,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				MovingBlockX = TestX;
 				MovingBlockY = TestY;
 				CurrentSpan = TestSpan;
+				bIsRotationMove = true;
 				break;
 			}
 		}
@@ -227,6 +230,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 	if (bHardDrop)
 	{
 		Level.RegisterDrop(MovingBlockY - HardDroppedY, true);
+		bIsRotationMove &= MovingBlockY == HardDroppedY; // if drop of 0 cells, it's more a lock than a drop. Don't invalidate T-Spin.
 		MovingBlockY = HardDroppedY;
 		bMustLockDown = true;
 	}
@@ -252,6 +256,7 @@ bool PlayStateNode::Tick(i32 LogicTick)
 				if (bSoftDrop)
 					Level.RegisterDrop(MovingBlockY - TestY, false);
 				MovingBlockY = TestY;
+				bIsRotationMove = false;
 			}
 			else
 			{
@@ -269,6 +274,28 @@ bool PlayStateNode::Tick(i32 LogicTick)
 		MainBoard.Blit(CurrentSpan, MovingBlockX, MovingBlockY, Value, Board::BlockLayer::None, Board::BlockLayer::Static);
 		MainBoard.ResetToConsolidated();
 
+		// TSpin detection
+		bool bIsMiniTSpin = false;
+		bool bIsTSpin = false;
+		if (MovingBlockNature == EPiece::Piece_T && bIsRotationMove)
+		{
+			// off board cells are considered filled, Over-the-top cells are empty. We hack that:
+			MainBoard.At(-1, 0).state = true;
+			MainBoard.At(0, MainBoard.GetHeight()).state = false;
+
+			// TDG.9.1: find the A B C and D cells: (respectively at indices 0 1 3 2)
+			static std::array<i32, 4> dx{0, 2, 2, 0}, dy{0, 0,-2,-2};
+			auto GetState = [&](i32 i){ return MainBoard.At(MovingBlockX + dx[i % 4], MovingBlockY + dy[i % 4]).state; };
+
+			bool A = GetState(MovingBlockOrient + 0); //
+			bool B = GetState(MovingBlockOrient + 1); //   A # B
+			bool C = GetState(MovingBlockOrient + 3); //   # # #
+			bool D = GetState(MovingBlockOrient + 2); //   C   D
+
+			bIsMiniTSpin = C && D && (A || B);
+			bIsTSpin = A && B && (C || D);
+		}
+
 		// clear MovingBlock state (to spawn a new one in the next frame)
 		MovingBlockNature = EPiece::Piece_None;
 		MovingBlockX = -1;
@@ -285,13 +312,14 @@ bool PlayStateNode::Tick(i32 LogicTick)
 			}
 		}
 
-		if (u32 ClearedLinesCount = (u32)CompletedLines.size())
+		u32 ClearedLinesCount = (u32)CompletedLines.size();
+		if (ClearedLinesCount)
 		{
-			Level.RegisterClearedLines(ClearedLinesCount);
 			bool bFancyFlash = ClearedLinesCount >= 4;
 			bool bSimpleFlash = ClearedLinesCount > 0;
 			CompleteLineAnimBudget = 150 * 1 * bSimpleFlash + 150 * 4 * bFancyFlash;
 		}
+		Level.RegisterScore(ClearedLinesCount, bIsTSpin, bIsMiniTSpin);
 	}
 	else
 	{

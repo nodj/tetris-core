@@ -64,6 +64,9 @@ private:
 	Board BackupState;
 	OutcomeId CurrentOutcomeId;
 
+	// T-Spin detection
+	bool bIsRotationMove = false;
+
 	// Death anim
 	i32 DeathAnimTime = 0;
 	i32 DeathAnimLastY = 0;
