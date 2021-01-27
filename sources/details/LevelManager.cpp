@@ -45,14 +45,14 @@ void LevelManager::RegisterScore(u32 LineCount, bool bIsTSpin, bool bIsMiniTSpin
 	i32 ThisScore = 0;
 	if (!bIsTSpin)
 	{
-		constexpr std::array<i32, 5> m = {0, 1, 3, 5, 8};
-		ThisScore = m[Clamp<u32>(LineCount, 0, m.size())];
+		static std::array<i32, 5> m = {0, 1, 3, 5, 8};
+		ThisScore = m[Clamp<u32>(LineCount, 0, (u32)m.size())];
 		ThisScore += bIsMiniTSpin; // mini-TSpin adds 100xlevel
 	}
 	else
 	{
-		constexpr std::array<i32, 4> m = {4, 8, 12, 16};
-		ThisScore = m[Clamp<u32>(LineCount, 0, m.size())];
+		static std::array<i32, 4> m = {4, 8, 12, 16};
+		ThisScore = m[Clamp<u32>(LineCount, 0, (u32)m.size())];
 	}
 	Stats.Score += ThisScore * 100 * (Stats.Level + 1);
 }
@@ -66,7 +66,7 @@ void LevelManager::SetCurrentLevel(u32 Level)
 {
 	static std::array<u32, 15> Delays = {1000, 793, 618, 473, 355, 262, 190, 135, 94, 64, 43, 28, 18, 11, 7};
 
-	u32 MaxLevel = Delays.size();
+	u32 MaxLevel = (u32)Delays.size();
 	Stats.Level = Clamp<u32>(Level, 0, MaxLevel);
 	MaxedOut = Level == 14;
 

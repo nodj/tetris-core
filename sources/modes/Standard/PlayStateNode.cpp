@@ -343,7 +343,7 @@ bool PlayStateNode::TickFadeOut(i32 LogicTick)
 	if (DeathAnimTime < 500)
 		return true;
 
-	int32 UpAnim = DeathAnimTime - 700;
+	i32 UpAnim = DeathAnimTime - 700;
 	// 50 block per seconds:
 	i32 CurrentY = UpAnim * 15 / 1000;
 

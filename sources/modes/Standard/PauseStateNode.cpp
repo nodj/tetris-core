@@ -24,7 +24,7 @@ tc::i32 PauseStateNode::GetLogicTickRate()
 	return 300;
 }
 
-bool PauseStateNode::Tick(i32 LogicTick)
+bool PauseStateNode::Tick(i32 /*LogicTick*/)
 {
 	bool bContinue = !Inputs.IsStartInvoked();
 

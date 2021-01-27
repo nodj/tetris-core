@@ -11,7 +11,7 @@ WaitStateNode::WaitStateNode(Board& ModeBoard, InputTracker& ModeInputs)
 {
 }
 
-void WaitStateNode::Enter(IStateNode* PreviousNode)
+void WaitStateNode::Enter(IStateNode* /*PreviousNode*/)
 {
 	// config capabilities
 	bCanFadeIn = false;

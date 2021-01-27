@@ -6,6 +6,8 @@
 #include "details/types.h"
 #include "modes/GameMode.h"
 
+#include <memory>
+
 namespace tc
 {
 

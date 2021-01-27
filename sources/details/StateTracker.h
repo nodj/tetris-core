@@ -27,7 +27,7 @@ struct IStateNode
 	virtual StateNodeId Id() const = 0;
 
 	// called once on state init
-	virtual void Enter(IStateNode* PreviousNode) {}
+	virtual void Enter(IStateNode* /*PreviousNode*/) {}
 
 	// called before each Tick* calls
 	// unit: milliseconds per logic tick

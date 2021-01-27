@@ -1,5 +1,7 @@
 #include "Board.h"
 
+#include <algorithm>
+
 namespace tc
 {
 
