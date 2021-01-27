@@ -28,6 +28,9 @@
     <ClCompile Include="..\..\sources\details\StateTracker.cpp" />
     <ClCompile Include="..\..\sources\modes\GameMode.cpp" />
     <ClCompile Include="..\..\sources\modes\GameModeStandard.cpp" />
+    <ClCompile Include="..\..\sources\modes\Standard\PauseStateNode.cpp" />
+    <ClCompile Include="..\..\sources\modes\Standard\PlayStateNode.cpp" />
+    <ClCompile Include="..\..\sources\modes\Standard\WaitStateNode.cpp" />
     <ClCompile Include="..\..\sources\test-pieces.cpp" />
     <ClCompile Include="..\..\sources\TetrisHost.cpp" />
   </ItemGroup>
@@ -44,6 +47,10 @@
     <ClInclude Include="..\..\sources\details\types.h" />
     <ClInclude Include="..\..\sources\modes\GameMode.h" />
     <ClInclude Include="..\..\sources\modes\GameModeStandard.h" />
+    <ClInclude Include="..\..\sources\modes\NodeIds.h" />
+    <ClInclude Include="..\..\sources\modes\Standard\PauseStateNode.h" />
+    <ClInclude Include="..\..\sources\modes\Standard\PlayStateNode.h" />
+    <ClInclude Include="..\..\sources\modes\Standard\WaitStateNode.h" />
     <ClInclude Include="..\..\sources\TetrisHost.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -51,32 +58,32 @@
     <ProjectGuid>{309F35DD-C2A9-4B3A-8A55-1017B1BD7572}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Tetris</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
