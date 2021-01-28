@@ -19,16 +19,16 @@ public:
 
 	virtual void RegisterInput(EGameplayInput Input) override;
 
-	virtual void InternalTick(i32 ms) override;
-
 	const Board& GetBoard() const { return SharedBoard; }
 
-public:
 	// Check if currently in game, with meaningful stats.
 	bool IsInPlayMode() const;
 
 	// API for stats during play mode. UB if IsInPlayMode returns false
 	const BasicGameStats& GetBasicStats() const;
+
+protected:
+	virtual void InternalTick(i32 ms) override;
 
 private:
 	Board SharedBoard;
