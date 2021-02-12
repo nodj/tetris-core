@@ -1,0 +1,31 @@
+name: MSBuild
+
+on: [push]
+
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: TetrisConsoleApp
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        Plateform: [x86, x64]
+        Configuration: [Debug, Release]
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Build ( ${{matrix.Plateform}} | ${{matrix.Configuration}} )
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /m /p:Configuration=${{matrix.Configuration}} /p:Platform=${{matrix.Plateform}} ${{env.SOLUTION_FILE_PATH}}
+
