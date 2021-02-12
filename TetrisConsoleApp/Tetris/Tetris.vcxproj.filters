@@ -71,7 +71,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\include\tc.cpp" />
     <ClCompile Include="..\..\tests\test-pieces.cpp" />
+    <ClCompile Include="..\..\sources\tc.cpp" />
   </ItemGroup>
 </Project>
