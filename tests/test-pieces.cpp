@@ -1,3 +1,5 @@
+// This file is part of the tetris-core project. Copyright (c) Johan Duparc.
+
 #include "tc/TetrisHost.h"
 #include "tc/details/Board.h"
 

@@ -1,3 +1,5 @@
+// This file is part of the tetris-core project. Copyright (c) Johan Duparc.
+
 #include "tc/details/SRS.h"
 
 #include "tc/details/pieces.h"

@@ -1,3 +1,5 @@
+// This file is part of the tetris-core project. Copyright (c) Johan Duparc.
+
 #pragma once
 
 #include "tc/details/GameplayInput.h"

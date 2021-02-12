@@ -1,3 +1,5 @@
+// This file is part of the tetris-core project. Copyright (c) Johan Duparc.
+
 #include "tc\TetrisHost.cpp"
 #include "tc\details\Board.cpp"
 #include "tc\details\InputTracker.cpp"
