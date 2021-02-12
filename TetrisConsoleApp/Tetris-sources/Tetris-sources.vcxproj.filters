@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{ff71ee6e-94ad-48ee-bf4a-babbbf9ee9ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\tc">
+      <UniqueIdentifier>{77ff8799-bec4-4eec-8331-b169c57faf27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\tc\modes">
+      <UniqueIdentifier>{808dc2cd-eee5-4561-98bc-c562dd1ffa78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\tc\modes\Standard">
+      <UniqueIdentifier>{1a13ce60-259c-42de-99a0-4da5143a16fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\tc\details">
+      <UniqueIdentifier>{182ef464-da18-4cd2-a28f-cc5ba7aa37ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources">
+      <UniqueIdentifier>{cdb7d9d3-20f4-4415-b771-7ed46ce42deb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources\tc">
+      <UniqueIdentifier>{c9346c11-65ac-43d4-af3c-0f1dd8fe4048}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources\tc\details">
+      <UniqueIdentifier>{874a475b-4f8e-4831-88fe-a338e68827cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources\tc\modes">
+      <UniqueIdentifier>{2b397517-237c-4867-9a7a-5cd4704257e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sources\tc\modes\Standard">
+      <UniqueIdentifier>{989d2e4c-fada-4d7f-b89d-2d78d43df70e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\tc\TetrisHost.h">
+      <Filter>include\tc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\GameMode.h">
+      <Filter>include\tc\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\GameModeStandard.h">
+      <Filter>include\tc\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\NodeIds.h">
+      <Filter>include\tc\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\Standard\PauseStateNode.h">
+      <Filter>include\tc\modes\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\Standard\PlayStateNode.h">
+      <Filter>include\tc\modes\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\Standard\WaitStateNode.h">
+      <Filter>include\tc\modes\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\Board.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\GameplayInput.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\InputTracker.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\LevelManager.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\LogicTickConverter.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\PieceGenerator.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\pieces.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\SRS.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\StateTracker.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\types.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\sources\tc\TetrisHost.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\details\Board.cpp">
+      <Filter>sources\tc\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\details\InputTracker.cpp">
+      <Filter>sources\tc\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\details\LevelManager.cpp">
+      <Filter>sources\tc\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\details\LogicTickConverter.cpp">
+      <Filter>sources\tc\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\details\pieces.cpp">
+      <Filter>sources\tc\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\details\SRS.cpp">
+      <Filter>sources\tc\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\details\StateTracker.cpp">
+      <Filter>sources\tc\details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\modes\GameMode.cpp">
+      <Filter>sources\tc\modes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\modes\GameModeStandard.cpp">
+      <Filter>sources\tc\modes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\modes\Standard\PauseStateNode.cpp">
+      <Filter>sources\tc\modes\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\modes\Standard\PlayStateNode.cpp">
+      <Filter>sources\tc\modes\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sources\tc\modes\Standard\WaitStateNode.cpp">
+      <Filter>sources\tc\modes\Standard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tests\test-pieces.cpp" />
+  </ItemGroup>
+</Project>
