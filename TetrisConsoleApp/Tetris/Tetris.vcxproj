@@ -19,39 +19,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\sources\details\Board.cpp" />
-    <ClCompile Include="..\..\sources\details\InputTracker.cpp" />
-    <ClCompile Include="..\..\sources\details\LevelManager.cpp" />
-    <ClCompile Include="..\..\sources\details\LogicTickConverter.cpp" />
-    <ClCompile Include="..\..\sources\details\pieces.cpp" />
-    <ClCompile Include="..\..\sources\details\SRS.cpp" />
-    <ClCompile Include="..\..\sources\details\StateTracker.cpp" />
-    <ClCompile Include="..\..\sources\modes\GameMode.cpp" />
-    <ClCompile Include="..\..\sources\modes\GameModeStandard.cpp" />
-    <ClCompile Include="..\..\sources\modes\Standard\PauseStateNode.cpp" />
-    <ClCompile Include="..\..\sources\modes\Standard\PlayStateNode.cpp" />
-    <ClCompile Include="..\..\sources\modes\Standard\WaitStateNode.cpp" />
-    <ClCompile Include="..\..\sources\test-pieces.cpp" />
-    <ClCompile Include="..\..\sources\TetrisHost.cpp" />
+    <ClInclude Include="..\..\include\tc\details\Board.h" />
+    <ClInclude Include="..\..\include\tc\details\GameplayInput.h" />
+    <ClInclude Include="..\..\include\tc\details\InputTracker.h" />
+    <ClInclude Include="..\..\include\tc\details\LevelManager.h" />
+    <ClInclude Include="..\..\include\tc\details\LogicTickConverter.h" />
+    <ClInclude Include="..\..\include\tc\details\PieceGenerator.h" />
+    <ClInclude Include="..\..\include\tc\details\pieces.h" />
+    <ClInclude Include="..\..\include\tc\details\SRS.h" />
+    <ClInclude Include="..\..\include\tc\details\StateTracker.h" />
+    <ClInclude Include="..\..\include\tc\details\types.h" />
+    <ClInclude Include="..\..\include\tc\modes\GameMode.h" />
+    <ClInclude Include="..\..\include\tc\modes\GameModeStandard.h" />
+    <ClInclude Include="..\..\include\tc\modes\NodeIds.h" />
+    <ClInclude Include="..\..\include\tc\modes\Standard\PauseStateNode.h" />
+    <ClInclude Include="..\..\include\tc\modes\Standard\PlayStateNode.h" />
+    <ClInclude Include="..\..\include\tc\modes\Standard\WaitStateNode.h" />
+    <ClInclude Include="..\..\include\tc\TetrisHost.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\sources\details\Board.h" />
-    <ClInclude Include="..\..\sources\details\GameplayInput.h" />
-    <ClInclude Include="..\..\sources\details\InputTracker.h" />
-    <ClInclude Include="..\..\sources\details\LevelManager.h" />
-    <ClInclude Include="..\..\sources\details\LogicTickConverter.h" />
-    <ClInclude Include="..\..\sources\details\PieceGenerator.h" />
-    <ClInclude Include="..\..\sources\details\pieces.h" />
-    <ClInclude Include="..\..\sources\details\SRS.h" />
-    <ClInclude Include="..\..\sources\details\StateTracker.h" />
-    <ClInclude Include="..\..\sources\details\types.h" />
-    <ClInclude Include="..\..\sources\modes\GameMode.h" />
-    <ClInclude Include="..\..\sources\modes\GameModeStandard.h" />
-    <ClInclude Include="..\..\sources\modes\NodeIds.h" />
-    <ClInclude Include="..\..\sources\modes\Standard\PauseStateNode.h" />
-    <ClInclude Include="..\..\sources\modes\Standard\PlayStateNode.h" />
-    <ClInclude Include="..\..\sources\modes\Standard\WaitStateNode.h" />
-    <ClInclude Include="..\..\sources\TetrisHost.h" />
+    <ClCompile Include="..\..\sources\tc.cpp" />
+    <ClCompile Include="..\..\tests\test-pieces.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -107,19 +95,27 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)..\sources;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)..\sources;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)..\sources;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)..\sources;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

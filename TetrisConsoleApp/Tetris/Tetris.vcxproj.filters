@@ -1,121 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="include">
+      <UniqueIdentifier>{e7ce72c2-8a6b-4689-ab14-ea988cff79ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\tetris-core">
-      <UniqueIdentifier>{47c937e0-b495-4fba-9e9e-6e92dab5c787}</UniqueIdentifier>
+    <Filter Include="include\tc">
+      <UniqueIdentifier>{6abfbd95-ebbe-4bc8-a1e1-e8d1a2c26018}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\tetris-core\sources">
-      <UniqueIdentifier>{36f98969-a59e-425e-baa7-a69eab12b066}</UniqueIdentifier>
+    <Filter Include="include\tc\modes">
+      <UniqueIdentifier>{4729865a-3bb3-4f76-9c6a-7e3215e2b29b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\tetris-core\sources\details">
-      <UniqueIdentifier>{953ccf87-cb9a-4135-ae5b-4458a44a6d07}</UniqueIdentifier>
+    <Filter Include="include\tc\details">
+      <UniqueIdentifier>{57485358-a51a-4a6b-ac69-bdc345d0b30d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\tetris-core\sources\modes">
-      <UniqueIdentifier>{26af7bd8-b6ce-41d7-b22c-3feaf5ac2d49}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\tetris-core\sources\modes\Standard">
-      <UniqueIdentifier>{349147de-ef80-438b-beda-d9fe3c1a96b2}</UniqueIdentifier>
+    <Filter Include="include\tc\modes\Standard">
+      <UniqueIdentifier>{037a13e8-0894-4cfe-87be-b7f14a4dc906}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\sources\TetrisHost.cpp">
-      <Filter>Source Files\tetris-core\sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\test-pieces.cpp">
-      <Filter>Source Files\tetris-core\sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\modes\GameModeStandard.cpp">
-      <Filter>Source Files\tetris-core\sources\modes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\modes\GameMode.cpp">
-      <Filter>Source Files\tetris-core\sources\modes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\modes\Standard\PlayStateNode.cpp">
-      <Filter>Source Files\tetris-core\sources\modes\Standard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\modes\Standard\WaitStateNode.cpp">
-      <Filter>Source Files\tetris-core\sources\modes\Standard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\modes\Standard\PauseStateNode.cpp">
-      <Filter>Source Files\tetris-core\sources\modes\Standard</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\pieces.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\SRS.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\StateTracker.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\Board.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\InputTracker.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\LevelManager.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sources\details\LogicTickConverter.cpp">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClCompile>
+    <ClInclude Include="..\..\include\tc\modes\Standard\WaitStateNode.h">
+      <Filter>include\tc\modes\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\Standard\PlayStateNode.h">
+      <Filter>include\tc\modes\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\Standard\PauseStateNode.h">
+      <Filter>include\tc\modes\Standard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\NodeIds.h">
+      <Filter>include\tc\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\GameModeStandard.h">
+      <Filter>include\tc\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\modes\GameMode.h">
+      <Filter>include\tc\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\types.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\StateTracker.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\SRS.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\pieces.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\PieceGenerator.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\LogicTickConverter.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\LevelManager.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\InputTracker.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\GameplayInput.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\details\Board.h">
+      <Filter>include\tc\details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\tc\TetrisHost.h">
+      <Filter>include\tc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\sources\TetrisHost.h">
-      <Filter>Source Files\tetris-core\sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\modes\GameMode.h">
-      <Filter>Source Files\tetris-core\sources\modes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\modes\GameModeStandard.h">
-      <Filter>Source Files\tetris-core\sources\modes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\modes\NodeIds.h">
-      <Filter>Source Files\tetris-core\sources\modes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\modes\Standard\PauseStateNode.h">
-      <Filter>Source Files\tetris-core\sources\modes\Standard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\modes\Standard\PlayStateNode.h">
-      <Filter>Source Files\tetris-core\sources\modes\Standard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\modes\Standard\WaitStateNode.h">
-      <Filter>Source Files\tetris-core\sources\modes\Standard</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\LogicTickConverter.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\PieceGenerator.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\pieces.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\SRS.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\StateTracker.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\types.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\Board.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\GameplayInput.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\InputTracker.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sources\details\LevelManager.h">
-      <Filter>Source Files\tetris-core\sources\details</Filter>
-    </ClInclude>
+    <ClCompile Include="..\..\tests\test-pieces.cpp" />
+    <ClCompile Include="..\..\sources\tc.cpp" />
   </ItemGroup>
 </Project>
