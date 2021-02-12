@@ -1,7 +1,7 @@
-#include <iostream>
+#include "tc/TetrisHost.h"
+#include "tc/details/Board.h"
 
-#include "TetrisHost.h"
-#include "details/Board.h"
+#include <iostream>
 #include <bitset>
 
 using namespace tc;
